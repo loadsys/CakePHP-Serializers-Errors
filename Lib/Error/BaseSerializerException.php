@@ -86,8 +86,8 @@ class BaseSerializerException extends CakeException {
 	 * @param array $paths An array of JSON Pointers to the relevant attribute(s) within the associated resource(s) in the request document. Each path MUST be relative to the resource path(s) expressed in the error object's "links" member [e.g. ["/first-name", "/last-name"] to reference a couple attributes].
 	 */
 	public function __construct(
-		$title = 'Base Json API Exception',
-		$detail = 'Base Json API Exception',
+		$title = 'Base Serializer Exception',
+		$detail = 'Base Serializer Exception',
 		$status = 400,
 		$id = null,
 		$href = null,

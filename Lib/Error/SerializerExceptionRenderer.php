@@ -102,7 +102,7 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 	}
 
 	/**
-	 * render the BaseSerializerException for a Json request
+	 * render the BaseSerializerException for a JSON request
 	 *
 	 * @param  BaseSerializerException $error an instance of BaseSerializerException
 	 * @return void
@@ -111,17 +111,17 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 		// Set the view class as json and render as json
 		$this->controller->viewClass = 'Json';
 		$this->controller->response->type('json');
-		$this->controller->response->statusCode($error->status);
+		$this->controller->response->statusCode(h($error->status));
 
 		// set all the values we have from our exception to populate the json object
-		$this->controller->set('id', $error->id);
-		$this->controller->set('href', $error->href);
-		$this->controller->set('status', $error->status);
-		$this->controller->set('code', $error->code);
-		$this->controller->set('title', $error->title);
-		$this->controller->set('detail', $error->detail);
-		$this->controller->set('links', $error->links);
-		$this->controller->set('paths', $error->paths);
+		$this->controller->set('id', h($error->id));
+		$this->controller->set('href', h($error->href));
+		$this->controller->set('status', h($error->status));
+		$this->controller->set('code', h($error->code));
+		$this->controller->set('title', h($error->title));
+		$this->controller->set('detail', h($error->detail));
+		$this->controller->set('links', h($error->links));
+		$this->controller->set('paths', h($error->paths));
 
 		$this->controller->set('_serialize', array(
 			'id', 'href', 'status', 'code', 'title ', 'detail', 'links', 'paths'
@@ -137,36 +137,37 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 	}
 
 	/**
-	 * render the BaseSerializerException for a JsonApi request
+	 * render the BaseSerializerException for a JSON API request
 	 *
 	 * @param  BaseSerializerException $error an instance of BaseSerializerException
 	 * @return void
 	 */
 	protected function renderAsJsonApi(BaseSerializerException $error) {
-		// Set the view class as json and render as json
-		$this->controller->viewClass = 'Json';
-		$this->controller->response->type('json');
+		// Add a response type for JSON API
+		$this->controller->response->type(array('jsonapi' => 'application/vnd.api+json'));
+		// Set the controller to response as JSON API
+		$this->controller->response->type('jsonapi');
+		// Set the correct Status Code
 		$this->controller->response->statusCode($error->status);
 
 		// set the errors object to match JsonApi's standard
-		$this->controller->set('errors', array(
-			'id' => h($error->id),
-			'href' => h($error->href),
-			'status' => h($error->status),
-			'code' => h($error->code),
-			'title' => h($error->title),
-			'detail' => h($error->detail),
-			'links' => h($error->links),
-			'paths' => h($error->paths),
-		));
-		$this->controller->set('_serialize', array('errors'));
+		$errors = array(
+			'errors' => array(
+				'id' => h($error->id),
+				'href' => h($error->href),
+				'status' => h($error->status),
+				'code' => h($error->code),
+				'title' => h($error->title),
+				'detail' => h($error->detail),
+				'links' => h($error->links),
+				'paths' => h($error->paths),
+			),
+		);
+		// json encode the errors
+		$jsonEncodedErrors = json_encode($errors);
 
-		if (empty($template)) {
-			$template = "SerializersErrors./Errors/serializer_exception";
-		}
-
-		$this->controller->render($template);
-		$this->controller->afterFilter();
+		// set the body to the json encoded errors
+		$this->controller->response->body($jsonEncodedErrors);
 		return $this->controller->response->send();
 	}
 
