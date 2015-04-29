@@ -1,0 +1,37 @@
+{
+  "name": "loadsys/cakephp-serializers-errors",
+  "type": "cakephp-plugin",
+  "description": "Used to serialize CakePHP Errors and Exceptions, primarily as HTML, JSON or JSON API.",
+  "keywords": [
+    "cakephp",
+    "serializers",
+    "cakephp-plugin",
+    "api",
+    "json",
+    "exceptions"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/loadsys/CakePHP-Serializers-Errors",
+  "authors": [
+    {
+      "name": "Justin Yost",
+      "homepage": "https://www.yostivanich.com/",
+      "email": "justin.yost@yostivanich.com",
+      "role": "Developer"
+    }
+  ],
+  "support": {
+    "issues": "https://github.com/loadsys/CakePHP-Serializers-Errors/issues",
+    "source": "https://github.com/loadsys/CakePHP-Serializers-Errors"
+  },
+  "require": {
+    "php": ">=5.4.0",
+    "composer/installers": "~1.0"
+  },
+  "extra": {
+    "installer-name": "SerializersErrors"
+  },
+  "suggest": {
+    "loadsys/cakephp_serializers": "Used for serializing CakePHP data into API style formats."
+  }
+}
