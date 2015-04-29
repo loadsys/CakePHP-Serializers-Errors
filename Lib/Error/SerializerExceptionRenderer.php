@@ -36,7 +36,7 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 	/**
 	 * render exceptions of type BaseSerializerException
 	 *
-	 * @param  BaseSerializerException $error the BaseSerializerException error to render
+	 * @param BaseSerializerException $error the BaseSerializerException error to render
 	 * @return void
 	 */
 	public function renderSerializerException(BaseSerializerException $error) {
@@ -51,11 +51,10 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 		return $this->defaultRender($error);
 	}
 
-
 	/**
 	 * is this request a JsonApi style request
 	 *
-	 * @return boolean returns true if JsonApi media request, false otherwise
+	 * @return bool returns true if JsonApi media request, false otherwise
 	 */
 	protected function isJsonApiRequest() {
 		return $this->controller->request->accepts('application/vnd.api+json');
@@ -64,7 +63,7 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 	/**
 	 * is this request for Json
 	 *
-	 * @return boolean returns true if Json media request, false otherwise
+	 * @return bool returns true if Json media request, false otherwise
 	 */
 	protected function isJsonRequest() {
 		return $this->controller->request->accepts('application/json');
@@ -73,7 +72,7 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 	/**
 	 * render the BaseSerializerException in the general case
 	 *
-	 * @param  BaseSerializerException $error an instance of BaseSerializerException
+	 * @param BaseSerializerException $error an instance of BaseSerializerException
 	 * @return void
 	 */
 	protected function defaultRender(BaseSerializerException $error) {
@@ -104,7 +103,7 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 	/**
 	 * render the BaseSerializerException for a JSON request
 	 *
-	 * @param  BaseSerializerException $error an instance of BaseSerializerException
+	 * @param BaseSerializerException $error an instance of BaseSerializerException
 	 * @return void
 	 */
 	protected function renderAsJson(BaseSerializerException $error) {
@@ -139,7 +138,7 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 	/**
 	 * render the BaseSerializerException for a JSON API request
 	 *
-	 * @param  BaseSerializerException $error an instance of BaseSerializerException
+	 * @param BaseSerializerException $error an instance of BaseSerializerException
 	 * @return void
 	 */
 	protected function renderAsJsonApi(BaseSerializerException $error) {
