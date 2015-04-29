@@ -73,6 +73,7 @@ class TestSerializerExceptionRenderer extends SerializerExceptionRenderer {
 	public function isJsonRequest() {
 		return parent::isJsonRequest();
 	}
+
 }
 
 /**
@@ -106,10 +107,10 @@ class SerializerExceptionRendererTest extends CakeTestCase {
 	public function testIsJsonApiRequest() {
 		$Controller = $this->getMock('Controller', array('render'));
 		$Controller->request = $this->getMock('CakeRequest');
-    $Controller->request->expects($this->once())
-    	->method('accepts')
-    	->with('application/vnd.api+json')
-    	->will($this->returnValue(true));
+		$Controller->request->expects($this->once())
+			->method('accepts')
+			->with('application/vnd.api+json')
+			->will($this->returnValue(true));
 		$Controller->response = new CakeResponse();
 
 		$Renderer = new TestSerializerExceptionRenderer(new Exception());
@@ -123,10 +124,10 @@ class SerializerExceptionRendererTest extends CakeTestCase {
 
 		$Controller = $this->getMock('Controller', array('render'));
 		$Controller->request = $this->getMock('CakeRequest');
-    $Controller->request->expects($this->once())
-    	->method('accepts')
-    	->with('application/vnd.api+json')
-    	->will($this->returnValue(false));
+		$Controller->request->expects($this->once())
+			->method('accepts')
+			->with('application/vnd.api+json')
+			->will($this->returnValue(false));
 		$Controller->response = new CakeResponse();
 
 		$Renderer = new TestSerializerExceptionRenderer(new Exception());
@@ -147,10 +148,10 @@ class SerializerExceptionRendererTest extends CakeTestCase {
 	public function testIsJsonRequest() {
 		$Controller = $this->getMock('Controller', array('render'));
 		$Controller->request = $this->getMock('CakeRequest');
-    $Controller->request->expects($this->once())
-    	->method('accepts')
-    	->with('application/json')
-    	->will($this->returnValue(true));
+		$Controller->request->expects($this->once())
+			->method('accepts')
+			->with('application/json')
+			->will($this->returnValue(true));
 		$Controller->response = new CakeResponse();
 
 		$Renderer = new TestSerializerExceptionRenderer(new Exception());
@@ -164,10 +165,10 @@ class SerializerExceptionRendererTest extends CakeTestCase {
 
 		$Controller = $this->getMock('Controller', array('render'));
 		$Controller->request = $this->getMock('CakeRequest');
-    $Controller->request->expects($this->once())
-    	->method('accepts')
-    	->with('application/json')
-    	->will($this->returnValue(false));
+		$Controller->request->expects($this->once())
+			->method('accepts')
+			->with('application/json')
+			->will($this->returnValue(false));
 		$Controller->response = new CakeResponse();
 
 		$Renderer = new TestSerializerExceptionRenderer(new Exception());

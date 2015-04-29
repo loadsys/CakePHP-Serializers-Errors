@@ -37,7 +37,7 @@ class BaseSerializerExceptionTest extends CakeTestCase {
 	 */
 	public function testConstructor() {
 		$title = "New Title";
-		$detail ="Custom detail message";
+		$detail = "Custom detail message";
 		$status = 406;
 		$id = "13242134-456657-asdfasdf";
 		$href = 'https://www.asdfasdfasdf.com/';
