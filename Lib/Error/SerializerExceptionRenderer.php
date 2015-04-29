@@ -39,7 +39,7 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 	 * @param BaseSerializerException $error the BaseSerializerException error to render
 	 * @return void
 	 */
-	public function renderSerializerException(BaseSerializerException $error) {
+	protected function renderSerializerException(BaseSerializerException $error) {
 		if ($this->isJsonApiRequest()) {
 			return $this->renderAsJsonApi($error);
 		}
@@ -49,24 +49,6 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 		}
 
 		return $this->defaultRender($error);
-	}
-
-	/**
-	 * is this request a JsonApi style request
-	 *
-	 * @return bool returns true if JsonApi media request, false otherwise
-	 */
-	protected function isJsonApiRequest() {
-		return $this->controller->request->accepts('application/vnd.api+json');
-	}
-
-	/**
-	 * is this request for Json
-	 *
-	 * @return bool returns true if Json media request, false otherwise
-	 */
-	protected function isJsonRequest() {
-		return $this->controller->request->accepts('application/json');
 	}
 
 	/**
@@ -168,6 +150,24 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 		// set the body to the json encoded errors
 		$this->controller->response->body($jsonEncodedErrors);
 		return $this->controller->response->send();
+	}
+
+	/**
+	 * is this request a JsonApi style request
+	 *
+	 * @return bool returns true if JsonApi media request, false otherwise
+	 */
+	protected function isJsonApiRequest() {
+		return $this->controller->request->accepts('application/vnd.api+json');
+	}
+
+	/**
+	 * is this request for Json
+	 *
+	 * @return bool returns true if Json media request, false otherwise
+	 */
+	protected function isJsonRequest() {
+		return $this->controller->request->accepts('application/json');
 	}
 
 }
