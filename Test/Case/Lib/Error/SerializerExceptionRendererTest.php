@@ -213,6 +213,107 @@ class SerializerExceptionRendererTest extends CakeTestCase {
 	}
 
 	/**
+	 * test the defaultSerializerRender method
+	 *
+	 * @return void
+	 */
+	public function testDefaultSerializerRender() {
+		$baseSerializerException = new BaseSerializerException();
+		$exceptionRenderer = $this->returnRenderer('text/html', $baseSerializerException);
+
+		$response = $exceptionRenderer->defaultSerializerRender($baseSerializerException);
+
+		$this->assertEquals(
+			"400",
+			$exceptionRenderer->controller->response->statusCode(),
+			"Our Controller Response Status Code does not equal 400"
+		);
+		$this->assertEquals(
+			'text/html',
+			$exceptionRenderer->controller->response->type(),
+			"Our Response Type does not equal text/html"
+		);
+		$this->assertArrayHasKey(
+			"id",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an id viewVars"
+		);
+		$this->assertArrayHasKey(
+			"href",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an href viewVars"
+		);
+		$this->assertArrayHasKey(
+			"status",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an status viewVars"
+		);
+		$this->assertArrayHasKey(
+			"code",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an code viewVars"
+		);
+		$this->assertArrayHasKey(
+			"url",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an url viewVars"
+		);
+		$this->assertSame(
+			'cake-response-send',
+			$response,
+			"Our response does not match the expected string"
+		);
+	}
+
+	/**
+	 * test the renderSerializerAsJson method
+	 *
+	 * @return void
+	 */
+	public function testRenderSerializerAsJson() {
+		$baseSerializerException = new BaseSerializerException();
+		$exceptionRenderer = $this->returnRenderer('application/json', $baseSerializerException);
+
+		$response = $exceptionRenderer->renderSerializerAsJson($baseSerializerException);
+
+		$this->assertEquals(
+			"400",
+			$exceptionRenderer->controller->response->statusCode(),
+			"Our Controller Response Status Code does not equal 400"
+		);
+		$this->assertEquals(
+			"application/json",
+			$exceptionRenderer->controller->response->type(),
+			"Our Response Type does not equal application/json"
+		);
+		$this->assertArrayHasKey(
+			"id",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an id viewVars"
+		);
+		$this->assertArrayHasKey(
+			"href",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an href viewVars"
+		);
+		$this->assertArrayHasKey(
+			"status",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an status viewVars"
+		);
+		$this->assertArrayHasKey(
+			"code",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an code viewVars"
+		);
+		$this->assertSame(
+			'cake-response-send',
+			$response,
+			"Our response does not match the expected string"
+		);
+	}
+
+	/**
 	 * test the renderSerializerAsJsonApi method
 	 *
 	 * @return void
@@ -247,6 +348,11 @@ class SerializerExceptionRendererTest extends CakeTestCase {
 			'{"errors":{"id":"","href":"","status":"400","code":"400","title":"Base Serializer Exception","detail":"Base Serializer Exception","links":"","paths":""}}',
 			$exceptionRenderer->controller->response->body(),
 			"Our body does not match the expected string"
+		);
+		$this->assertSame(
+			'cake-response-send',
+			$response,
+			"Our response does not match the expected string"
 		);
 	}
 
