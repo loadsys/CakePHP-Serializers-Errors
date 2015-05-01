@@ -6,9 +6,13 @@
 [![Coverage Status](https://coveralls.io/repos/loadsys/CakePHP-Serializers-Errors/badge.svg)](https://coveralls.io/r/loadsys/CakePHP-Serializers-Errors)
 [![Total Downloads](https://img.shields.io/packagist/dt/loadsys/cakephp-serializers-errors.svg?style=flat-square)](https://packagist.org/packages/loadsys/cakephp-serializers-errors)
 
-Basic description of the plugin
+CakePHP SerializersErrors Serializes and Renders `HttpException`s, `CakeException`s and a new class
+`BaseSerializerException`s.
 
 ## Requirements
+
+* CakePHP 2.3+
+* PHP 5.4+
 
 ## Installation
 
@@ -34,6 +38,11 @@ Configure::write('Exception', array(
 	'log' => true,
 ));
 ```
+
+* Once this is done Exceptions are rendered as possible, [JSON API errors](http://jsonapi.org/format/#errors), 
+JSON formated errors or standard HTML responses, differing on the request `Accepts` Header. 
+* If you build custom Exceptions that extend `BaseSerializerException` you get 
+Exceptions that enable the full feature set of [JSON API errors](http://jsonapi.org/format/#errors).
 
 ## Contributing
 
