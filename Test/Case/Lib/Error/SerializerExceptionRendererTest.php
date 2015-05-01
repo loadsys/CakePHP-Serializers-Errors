@@ -297,6 +297,90 @@ class SerializerExceptionRendererTest extends CakeTestCase {
 	}
 
 	/**
+	 * test the renderCakeException method when calling renderCakeAsJsonApi
+	 *
+	 * @return void
+	 */
+	public function testRenderCakeExceptionJsonApiRequest() {
+		$exception = new CakeException("Message", 400);
+		$mockRenderer = $this->getMock('TestSerializerExceptionRenderer',
+			array('isJsonApiRequest', 'renderCakeAsJsonApi'),
+			array($exception)
+		);
+		$mockRenderer->expects($this->once())
+			->method('isJsonApiRequest')
+			->will($this->returnValue(true));
+		$mockRenderer->expects($this->once())
+			->method('renderCakeAsJsonApi')
+			->with($exception)
+			->will($this->returnValue("renderCakeAsJsonApi"));
+
+		$this->assertEquals(
+			"renderCakeAsJsonApi",
+			$mockRenderer->renderCakeException($exception),
+			"renderCakeException did not return our mocked value"
+		);
+	}
+
+	/**
+	 * test the renderCakeException method when calling renderCakeAsJson
+	 *
+	 * @return void
+	 */
+	public function testRenderCakeExceptionJsonRequest() {
+		$exception = new CakeException("Message", 400);
+		$mockRenderer = $this->getMock('TestSerializerExceptionRenderer',
+			array('isJsonApiRequest', 'isJsonRequest', 'renderCakeAsJson'),
+			array($exception)
+		);
+		$mockRenderer->expects($this->once())
+			->method('isJsonApiRequest')
+			->will($this->returnValue(false));
+		$mockRenderer->expects($this->once())
+			->method('isJsonRequest')
+			->will($this->returnValue(true));
+		$mockRenderer->expects($this->once())
+			->method('renderCakeAsJson')
+			->with($exception)
+			->will($this->returnValue("renderCakeAsJson"));
+
+		$this->assertEquals(
+			"renderCakeAsJson",
+			$mockRenderer->renderCakeException($exception),
+			"renderCakeException did not return our mocked value"
+		);
+	}
+
+	/**
+	 * test the renderCakeException method when calling defaultCakeRender
+	 *
+	 * @return void
+	 */
+	public function testRenderCakeExceptionDefaultRequest() {
+		$exception = new CakeException("Message", 400);
+		$mockRenderer = $this->getMock('TestSerializerExceptionRenderer',
+			array('isJsonApiRequest', 'isJsonRequest', 'defaultCakeRender'),
+			array($exception)
+		);
+		$mockRenderer->expects($this->once())
+			->method('isJsonApiRequest')
+			->will($this->returnValue(false));
+		$mockRenderer->expects($this->once())
+			->method('isJsonRequest')
+			->will($this->returnValue(false));
+		$mockRenderer->expects($this->once())
+			->method('defaultCakeRender')
+			->with($exception)
+			->will($this->returnValue("defaultCakeRender"));
+
+		$this->assertEquals(
+			"defaultCakeRender",
+			$mockRenderer->renderCakeException($exception),
+			"renderCakeException did not return our mocked value"
+		);
+	}
+
+	/**
 	 * test the defaultHttpRender method
 	 *
 	 * @return void
