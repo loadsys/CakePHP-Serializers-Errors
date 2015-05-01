@@ -213,6 +213,90 @@ class SerializerExceptionRendererTest extends CakeTestCase {
 	}
 
 	/**
+	 * test the renderHttpException method when calling renderHttpAsJsonApi
+	 *
+	 * @return void
+	 */
+	public function testRenderHttpExceptionJsonApiRequest() {
+		$httpException = new HttpException("Message", 400);
+		$mockRenderer = $this->getMock('TestSerializerExceptionRenderer',
+			array('isJsonApiRequest', 'renderHttpAsJsonApi'),
+			array($httpException)
+		);
+		$mockRenderer->expects($this->once())
+			->method('isJsonApiRequest')
+			->will($this->returnValue(true));
+		$mockRenderer->expects($this->once())
+			->method('renderHttpAsJsonApi')
+			->with($httpException)
+			->will($this->returnValue("renderHttpAsJsonApi"));
+
+		$this->assertEquals(
+			"renderHttpAsJsonApi",
+			$mockRenderer->renderHttpException($httpException),
+			"renderHttpException did not return our mocked value"
+		);
+	}
+
+	/**
+	 * test the renderHttpException method when calling renderHttpAsJson
+	 *
+	 * @return void
+	 */
+	public function testRenderHttpExceptionJsonRequest() {
+		$httpException = new HttpException("Message", 400);
+		$mockRenderer = $this->getMock('TestSerializerExceptionRenderer',
+			array('isJsonApiRequest', 'isJsonRequest', 'renderHttpAsJson'),
+			array($httpException)
+		);
+		$mockRenderer->expects($this->once())
+			->method('isJsonApiRequest')
+			->will($this->returnValue(false));
+		$mockRenderer->expects($this->once())
+			->method('isJsonRequest')
+			->will($this->returnValue(true));
+		$mockRenderer->expects($this->once())
+			->method('renderHttpAsJson')
+			->with($httpException)
+			->will($this->returnValue("renderHttpAsJson"));
+
+		$this->assertEquals(
+			"renderHttpAsJson",
+			$mockRenderer->renderHttpException($httpException),
+			"renderHttpException did not return our mocked value"
+		);
+	}
+
+	/**
+	 * test the renderHttpException method when calling defaultHttpRender
+	 *
+	 * @return void
+	 */
+	public function testRenderHttpExceptionDefaultRequest() {
+		$httpException = new HttpException("Message", 400);
+		$mockRenderer = $this->getMock('TestSerializerExceptionRenderer',
+			array('isJsonApiRequest', 'isJsonRequest', 'defaultHttpRender'),
+			array($httpException)
+		);
+		$mockRenderer->expects($this->once())
+			->method('isJsonApiRequest')
+			->will($this->returnValue(false));
+		$mockRenderer->expects($this->once())
+			->method('isJsonRequest')
+			->will($this->returnValue(false));
+		$mockRenderer->expects($this->once())
+			->method('defaultHttpRender')
+			->with($httpException)
+			->will($this->returnValue("defaultHttpRender"));
+
+		$this->assertEquals(
+			"defaultHttpRender",
+			$mockRenderer->renderHttpException($httpException),
+			"renderHttpException did not return our mocked value"
+		);
+	}
+
+	/**
 	 * test the defaultHttpRender method
 	 *
 	 * @return void
