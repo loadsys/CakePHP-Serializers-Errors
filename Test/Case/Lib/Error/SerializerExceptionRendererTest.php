@@ -213,6 +213,80 @@ class SerializerExceptionRendererTest extends CakeTestCase {
 	}
 
 	/**
+	 * test the render method, in all the various cases
+	 *
+	 * @return void
+	 */
+	public function testRender() {
+		$exception = new BaseSerializerException();
+		$mockRenderer = $this->getMock('TestSerializerExceptionRenderer',
+			array('renderSerializerException'),
+			array($exception)
+		);
+		$mockRenderer->expects($this->once())
+			->method('renderSerializerException')
+			->with($exception)
+			->will($this->returnValue("renderSerializerException"));
+		$mockRenderer->error = $exception;
+
+		$this->assertEquals(
+			"renderSerializerException",
+			$mockRenderer->render($exception),
+			"render did not return our mocked value `renderSerializerException` for a BaseSerializerException"
+		);
+
+		$exception = new CakeException("Message", 400);
+		$mockRenderer = $this->getMock('TestSerializerExceptionRenderer',
+			array('renderCakeException'),
+			array($exception)
+		);
+		$mockRenderer->expects($this->once())
+			->method('renderCakeException')
+			->with($exception)
+			->will($this->returnValue("renderCakeException"));
+		$mockRenderer->error = $exception;
+
+		$this->assertEquals(
+			"renderCakeException",
+			$mockRenderer->render($exception),
+			"render did not return our mocked value `renderCakeException` for a CakeException"
+		);
+
+		$exception = new HttpException("Message", 400);
+		$mockRenderer = $this->getMock('TestSerializerExceptionRenderer',
+			array('renderHttpException'),
+			array($exception)
+		);
+		$mockRenderer->expects($this->once())
+			->method('renderHttpException')
+			->with($exception)
+			->will($this->returnValue("renderHttpException"));
+		$mockRenderer->error = $exception;
+
+		$this->assertEquals(
+			"renderHttpException",
+			$mockRenderer->render($exception),
+			"render did not return our mocked value `renderHttpException` for a HttpException"
+		);
+
+		$exception = new Exception();
+		$mockRenderer = $this->getMock('TestSerializerExceptionRenderer',
+			array('render'),
+			array($exception)
+		);
+		$mockRenderer->expects($this->once())
+			->method('render')
+			->will($this->returnValue("render"));
+		$mockRenderer->error = $exception;
+
+		$this->assertEquals(
+			"render",
+			$mockRenderer->render($exception),
+			"render did not return our mocked value `render` for a Exception"
+		);
+	}
+
+	/**
 	 * test the renderHttpException method when calling renderHttpAsJsonApi
 	 *
 	 * @return void
