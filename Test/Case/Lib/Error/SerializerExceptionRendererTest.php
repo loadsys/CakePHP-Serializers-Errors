@@ -52,7 +52,7 @@ class TestSerializerExceptionRenderer extends SerializerExceptionRenderer {
 	 * @param HttpException $error an instance of HttpException
 	 * @return void
 	 */
-	protected function renderHttpAsJson(HttpException $error) {
+	public function renderHttpAsJson(HttpException $error) {
 		return parent::renderHttpAsJson($error);
 	}
 
@@ -62,7 +62,7 @@ class TestSerializerExceptionRenderer extends SerializerExceptionRenderer {
 	 * @param HttpException $error an instance of HttpException
 	 * @return void
 	 */
-	protected function renderHttpAsJsonApi(HttpException $error) {
+	public function renderHttpAsJsonApi(HttpException $error) {
 		return parent::renderHttpAsJsonApi($error);
 	}
 
@@ -72,7 +72,7 @@ class TestSerializerExceptionRenderer extends SerializerExceptionRenderer {
 	 * @param HttpException $error an instance of HttpException
 	 * @return void
 	 */
-	protected function defaultHttpRender(HttpException $error) {
+	public function defaultHttpRender(HttpException $error) {
 		return parent::defaultHttpRender($error);
 	}
 
@@ -82,7 +82,7 @@ class TestSerializerExceptionRenderer extends SerializerExceptionRenderer {
 	 * @param CakeException $error an instance of CakeException
 	 * @return void
 	 */
-	protected function renderCakeAsJson(CakeException $error) {
+	public function renderCakeAsJson(CakeException $error) {
 		return parent::renderCakeAsJson($error);
 	}
 
@@ -92,7 +92,7 @@ class TestSerializerExceptionRenderer extends SerializerExceptionRenderer {
 	 * @param CakeException $error an instance of CakeException
 	 * @return void
 	 */
-	protected function renderCakeAsJsonApi(CakeException $error) {
+	public function renderCakeAsJsonApi(CakeException $error) {
 		return parent::renderCakeAsJsonApi($error);
 	}
 
@@ -102,7 +102,7 @@ class TestSerializerExceptionRenderer extends SerializerExceptionRenderer {
 	 * @param CakeException $error an instance of CakeException
 	 * @return void
 	 */
-	protected function defaultCakeRender(CakeException $error) {
+	public function defaultCakeRender(CakeException $error) {
 		return parent::defaultCakeRender($error);
 	}
 
@@ -210,6 +210,155 @@ class SerializerExceptionRendererTest extends CakeTestCase {
 		$exceptionRenderer->controller = $mockController;
 
 		return $exceptionRenderer;
+	}
+
+	/**
+	 * test the defaultCakeRender method
+	 *
+	 * @return void
+	 */
+	public function testDefaultCakeRender() {
+		$cakeException = new CakeException("Message");
+		$exceptionRenderer = $this->returnRenderer('text/html', $cakeException);
+
+		$response = $exceptionRenderer->defaultCakeRender($cakeException);
+
+		$this->assertEquals(
+			"500",
+			$exceptionRenderer->controller->response->statusCode(),
+			"Our Controller Response Status Code does not equal 500"
+		);
+		$this->assertEquals(
+			'text/html',
+			$exceptionRenderer->controller->response->type(),
+			"Our Response Type does not equal text/html"
+		);
+		$this->assertArrayHasKey(
+			"code",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an code viewVars"
+		);
+		$this->assertArrayHasKey(
+			"name",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an name viewVars"
+		);
+		$this->assertArrayHasKey(
+			"message",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an message viewVars"
+		);
+		$this->assertArrayHasKey(
+			"url",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an url viewVars"
+		);
+		$this->assertArrayHasKey(
+			"error",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an error viewVars"
+		);
+		$this->assertSame(
+			null,
+			$response,
+			"Our response does not match null"
+		);
+	}
+
+	/**
+	 * test the renderCakeAsJson method
+	 *
+	 * @return void
+	 */
+	public function testRenderCakeAsJson() {
+		$cakeException = new CakeException("Message");
+		$exceptionRenderer = $this->returnRenderer('application/json', $cakeException);
+
+		$response = $exceptionRenderer->renderCakeAsJson($cakeException);
+
+		$this->assertEquals(
+			"500",
+			$exceptionRenderer->controller->response->statusCode(),
+			"Our Controller Response Status Code does not equal 500"
+		);
+		$this->assertEquals(
+			"application/json",
+			$exceptionRenderer->controller->response->type(),
+			"Our Response Type does not equal application/json"
+		);
+		$this->assertArrayHasKey(
+			"code",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an code viewVars"
+		);
+		$this->assertArrayHasKey(
+			"name",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an name viewVars"
+		);
+		$this->assertArrayHasKey(
+			"message",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an message viewVars"
+		);
+		$this->assertArrayHasKey(
+			"url",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an url viewVars"
+		);
+		$this->assertArrayHasKey(
+			"error",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an error viewVars"
+		);
+		$this->assertSame(
+			null,
+			$response,
+			"Our response does not match null"
+		);
+	}
+
+	/**
+	 * test the renderCakeAsJsonApi method
+	 *
+	 * @return void
+	 */
+	public function testRenderCakeAsJsonApi() {
+		$cakeException = new CakeException("Message");
+		$exceptionRenderer = $this->returnRenderer('application/vnd.api+json', $cakeException);
+
+		$response = $exceptionRenderer->renderCakeAsJsonApi($cakeException);
+
+		$this->assertEquals(
+			"500",
+			$exceptionRenderer->controller->response->statusCode(),
+			"Our Controller Response Status Code does not equal 500"
+		);
+		$this->assertEquals(
+			"application/vnd.api+json",
+			$exceptionRenderer->controller->response->type(),
+			"Our Response Type does not equal application/vnd.api+json"
+		);
+		$this->assertInternalType(
+			"string",
+			$exceptionRenderer->controller->response->body(),
+			"Our body is not a string"
+		);
+		$this->assertInstanceOf(
+			"stdClass",
+			json_decode($exceptionRenderer->controller->response->body()),
+			"Our body is not a json_encoded array"
+		);
+		$this->assertSame(
+			'{"errors":{"id":null,"href":null,"status":"500","code":"CakeException","title":"Message","detail":[],"links":[],"paths":[]}}',
+			$exceptionRenderer->controller->response->body(),
+			"Our body does not match the expected string"
+		);
+		$this->assertSame(
+			'cake-response-send',
+			$response,
+			"Our response does not match the expected string"
+		);
 	}
 
 	/**
