@@ -213,6 +213,155 @@ class SerializerExceptionRendererTest extends CakeTestCase {
 	}
 
 	/**
+	 * test the defaultHttpRender method
+	 *
+	 * @return void
+	 */
+	public function testDefaultHttpRender() {
+		$httpException = new HttpException("Message", 400);
+		$exceptionRenderer = $this->returnRenderer('text/html', $httpException);
+
+		$response = $exceptionRenderer->defaultHttpRender($httpException);
+
+		$this->assertEquals(
+			"400",
+			$exceptionRenderer->controller->response->statusCode(),
+			"Our Controller Response Status Code does not equal 400"
+		);
+		$this->assertEquals(
+			'text/html',
+			$exceptionRenderer->controller->response->type(),
+			"Our Response Type does not equal text/html"
+		);
+		$this->assertArrayHasKey(
+			"code",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an code viewVars"
+		);
+		$this->assertArrayHasKey(
+			"name",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an name viewVars"
+		);
+		$this->assertArrayHasKey(
+			"message",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an message viewVars"
+		);
+		$this->assertArrayHasKey(
+			"url",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an url viewVars"
+		);
+		$this->assertArrayHasKey(
+			"error",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an error viewVars"
+		);
+		$this->assertSame(
+			null,
+			$response,
+			"Our response does not match null"
+		);
+	}
+
+	/**
+	 * test the renderHttpAsJson method
+	 *
+	 * @return void
+	 */
+	public function testRenderHttpAsJson() {
+		$httpException = new HttpException("Message", 400);
+		$exceptionRenderer = $this->returnRenderer('application/json', $httpException);
+
+		$response = $exceptionRenderer->renderHttpAsJson($httpException);
+
+		$this->assertEquals(
+			"400",
+			$exceptionRenderer->controller->response->statusCode(),
+			"Our Controller Response Status Code does not equal 400"
+		);
+		$this->assertEquals(
+			"application/json",
+			$exceptionRenderer->controller->response->type(),
+			"Our Response Type does not equal application/json"
+		);
+		$this->assertArrayHasKey(
+			"code",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an code viewVars"
+		);
+		$this->assertArrayHasKey(
+			"name",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an name viewVars"
+		);
+		$this->assertArrayHasKey(
+			"message",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an message viewVars"
+		);
+		$this->assertArrayHasKey(
+			"url",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an url viewVars"
+		);
+		$this->assertArrayHasKey(
+			"error",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an error viewVars"
+		);
+		$this->assertSame(
+			null,
+			$response,
+			"Our response does not match null"
+		);
+	}
+
+	/**
+	 * test the renderHttpAsJsonApi method
+	 *
+	 * @return void
+	 */
+	public function testRenderHttpAsJsonApi() {
+		$httpException = new HttpException("Message", 400);
+		$exceptionRenderer = $this->returnRenderer('application/vnd.api+json', $httpException);
+
+		$response = $exceptionRenderer->renderHttpAsJsonApi($httpException);
+
+		$this->assertEquals(
+			"400",
+			$exceptionRenderer->controller->response->statusCode(),
+			"Our Controller Response Status Code does not equal 400"
+		);
+		$this->assertEquals(
+			"application/vnd.api+json",
+			$exceptionRenderer->controller->response->type(),
+			"Our Response Type does not equal application/vnd.api+json"
+		);
+		$this->assertInternalType(
+			"string",
+			$exceptionRenderer->controller->response->body(),
+			"Our body is not a string"
+		);
+		$this->assertInstanceOf(
+			"stdClass",
+			json_decode($exceptionRenderer->controller->response->body()),
+			"Our body is not a json_encoded array"
+		);
+		$this->assertSame(
+			'{"errors":{"id":null,"href":null,"status":"400","code":"HttpException","title":"Message","detail":"Message","links":[],"paths":[]}}',
+			$exceptionRenderer->controller->response->body(),
+			"Our body does not match the expected string"
+		);
+		$this->assertSame(
+			'cake-response-send',
+			$response,
+			"Our response does not match the expected string"
+		);
+	}
+
+	/**
 	 * test the defaultCakeRender method
 	 *
 	 * @return void
