@@ -27,7 +27,7 @@ class AllSerializersErrorsTest extends PHPUnit_Framework_TestSuite {
 	 */
 	public static function suite() {
 		$path = dirname(__FILE__) . '/';
-		$suite = new CakeTestSuite('All Tests');
+		$suite = new CakeTestSuite('All SerializersErrors Tests');
 
 		foreach (self::$suites as $file) {
 			if (is_readable($path . $file)) {
