@@ -27,10 +27,50 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 	 */
 	public function render() {
 		if ($this->error instanceof BaseSerializerException) {
-			$this->renderSerializerException($this->error);
+			return $this->renderSerializerException($this->error);
+		} elseif ($this->error instanceof CakeException) {
+			return $this->renderCakeException($this->error);
+		} elseif ($this->error instanceof HttpException) {
+			return $this->renderHttpException($this->error);
 		} else {
-			parent::render();
+			return parent::render();
 		}
+	}
+
+	/**
+	 * render exceptions of type HttpException
+	 *
+	 * @param HttpException $error the HttpException error to render
+	 * @return void
+	 */
+	protected function renderHttpException(HttpException $error) {
+		if ($this->isJsonApiRequest()) {
+			return $this->renderHttpAsJsonApi($error);
+		}
+
+		if ($this->isJsonRequest()) {
+			return $this->renderHttpAsJson($error);
+		}
+
+		return $this->defaultHttpRender($error);
+	}
+
+	/**
+	 * render exceptions of type CakeException
+	 *
+	 * @param CakeException $error the CakeException error to render
+	 * @return void
+	 */
+	protected function renderCakeException(CakeException $error) {
+		if ($this->isJsonApiRequest()) {
+			return $this->renderCakeAsJsonApi($error);
+		}
+
+		if ($this->isJsonRequest()) {
+			return $this->renderCakeAsJson($error);
+		}
+
+		return $this->defaultCakeRender($error);
 	}
 
 	/**
@@ -41,14 +81,178 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 	 */
 	protected function renderSerializerException(BaseSerializerException $error) {
 		if ($this->isJsonApiRequest()) {
-			return $this->renderAsJsonApi($error);
+			return $this->renderSerializerAsJsonApi($error);
 		}
 
 		if ($this->isJsonRequest()) {
-			return $this->renderAsJson($error);
+			return $this->renderSerializerAsJson($error);
 		}
 
-		return $this->defaultRender($error);
+		return $this->defaultSerializerRender($error);
+	}
+
+	/**
+	 * render the HttpException for a JSON request
+	 *
+	 * @param HttpException $error an instance of HttpException
+	 * @return void
+	 */
+	protected function renderHttpAsJson(HttpException $error) {
+		// Set the view class as json and render as json
+		$this->controller->viewClass = 'Json';
+		$this->controller->response->type('json');
+
+		$url = $this->controller->request->here();
+		$code = ($error->getCode() >= 400 && $error->getCode() < 506) ? $error->getCode() : 500;
+		$this->controller->response->statusCode($code);
+		$this->controller->set(array(
+			'code' => $code,
+			'name' => h(get_class($error)),
+			'message' => h($error->getMessage()),
+			'url' => h($url),
+			'error' => $error,
+			'_serialize' => array('code', 'name', 'message', 'url')
+		));
+		$this->_outputMessage($this->template);
+	}
+
+	/**
+	 * render the HttpException for a JSON API request
+	 *
+	 * @param HttpException $error an instance of HttpException
+	 * @return void
+	 */
+	protected function renderHttpAsJsonApi(HttpException $error) {
+		// Add a response type for JSON API
+		$this->controller->response->type(array('jsonapi' => 'application/vnd.api+json'));
+		// Set the controller to response as JSON API
+		$this->controller->response->type('jsonapi');
+		// Set the correct Status Code
+		$this->controller->response->statusCode($error->getCode());
+
+		// set the errors object to match JsonApi's standard
+		$errors = array(
+			'errors' => array(
+				'id' => null,
+				'href' => null,
+				'status' => h($error->getCode()),
+				'code' => h(get_class($error)),
+				'title' => h($error->getMessage()),
+				'detail' => h($error->getMessage()),
+				'links' => array(),
+				'paths' => array(),
+			),
+		);
+		// json encode the errors
+		$jsonEncodedErrors = json_encode($errors);
+
+		// set the body to the json encoded errors
+		$this->controller->response->body($jsonEncodedErrors);
+		return $this->controller->response->send();
+	}
+
+	/**
+	 * render the HttpException in the general case
+	 *
+	 * @param HttpException $error an instance of HttpException
+	 * @return void
+	 */
+	protected function defaultHttpRender(HttpException $error) {
+		$url = $this->controller->request->here();
+		$code = ($error->getCode() >= 400 && $error->getCode() < 506) ? $error->getCode() : 500;
+		$this->controller->response->statusCode($code);
+		$this->controller->set(array(
+			'code' => $code,
+			'name' => h(get_class($error)),
+			'message' => h($error->getMessage()),
+			'url' => h($url),
+			'error' => $error,
+			'_serialize' => array('code', 'name', 'message', 'url')
+		));
+		$this->_outputMessage("error400");
+	}
+
+	/**
+	 * render the CakeException for a JSON request
+	 *
+	 * @param CakeException $error an instance of CakeException
+	 * @return void
+	 */
+	protected function renderCakeAsJson(CakeException $error) {
+		// Set the view class as json and render as json
+		$this->controller->viewClass = 'Json';
+		$this->controller->response->type('json');
+
+		$url = $this->controller->request->here();
+		$code = ($error->getCode() >= 400 && $error->getCode() < 506) ? $error->getCode() : 500;
+		$this->controller->response->statusCode($code);
+		$this->controller->set(array(
+			'code' => $code,
+			'name' => h(get_class($error)),
+			'message' => h($error->getMessage()),
+			'url' => h($url),
+			'error' => $error,
+			'_serialize' => array('code', 'name', 'message', 'url')
+		));
+		$this->controller->set($error->getAttributes());
+		$this->_outputMessage($this->template);
+	}
+
+	/**
+	 * render the CakeException for a JSON API request
+	 *
+	 * @param CakeException $error an instance of CakeException
+	 * @return void
+	 */
+	protected function renderCakeAsJsonApi(CakeException $error) {
+		// Add a response type for JSON API
+		$this->controller->response->type(array('jsonapi' => 'application/vnd.api+json'));
+		// Set the controller to response as JSON API
+		$this->controller->response->type('jsonapi');
+		// Set the correct Status Code
+		$this->controller->response->statusCode($error->getCode());
+
+		// set the errors object to match JsonApi's standard
+		$errors = array(
+			'errors' => array(
+				'id' => null,
+				'href' => null,
+				'status' => h($error->getCode()),
+				'code' => h(get_class($error)),
+				'title' => h($error->getMessage()),
+				'detail' => h($error->getAttributes()),
+				'links' => array(),
+				'paths' => array(),
+			),
+		);
+		// json encode the errors
+		$jsonEncodedErrors = json_encode($errors);
+
+		// set the body to the json encoded errors
+		$this->controller->response->body($jsonEncodedErrors);
+		return $this->controller->response->send();
+	}
+
+	/**
+	 * render the CakeException in the general case
+	 *
+	 * @param CakeException $error an instance of CakeException
+	 * @return void
+	 */
+	protected function defaultCakeRender(CakeException $error) {
+		$url = $this->controller->request->here();
+		$code = ($error->getCode() >= 400 && $error->getCode() < 506) ? $error->getCode() : 500;
+		$this->controller->response->statusCode($code);
+		$this->controller->set(array(
+			'code' => $code,
+			'name' => h(get_class($error)),
+			'message' => h($error->getMessage()),
+			'url' => h($url),
+			'error' => $error,
+			'_serialize' => array('code', 'name', 'message', 'url')
+		));
+		$this->controller->set($error->getAttributes());
+		$this->_outputMessage("error500");
 	}
 
 	/**
@@ -57,7 +261,7 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 	 * @param BaseSerializerException $error an instance of BaseSerializerException
 	 * @return void
 	 */
-	protected function defaultRender(BaseSerializerException $error) {
+	protected function defaultSerializerRender(BaseSerializerException $error) {
 		$this->controller->response->statusCode($error->status);
 
 		// set the errors object to match JsonApi's expectations
@@ -88,11 +292,11 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 	 * @param BaseSerializerException $error an instance of BaseSerializerException
 	 * @return void
 	 */
-	protected function renderAsJson(BaseSerializerException $error) {
+	protected function renderSerializerAsJson(BaseSerializerException $error) {
 		// Set the view class as json and render as json
 		$this->controller->viewClass = 'Json';
 		$this->controller->response->type('json');
-		$this->controller->response->statusCode(h($error->status));
+		$this->controller->response->statusCode($error->status);
 
 		// set all the values we have from our exception to populate the json object
 		$this->controller->set('id', h($error->id));
@@ -123,7 +327,7 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 	 * @param BaseSerializerException $error an instance of BaseSerializerException
 	 * @return void
 	 */
-	protected function renderAsJsonApi(BaseSerializerException $error) {
+	protected function renderSerializerAsJsonApi(BaseSerializerException $error) {
 		// Add a response type for JSON API
 		$this->controller->response->type(array('jsonapi' => 'application/vnd.api+json'));
 		// Set the controller to response as JSON API
