@@ -17,6 +17,7 @@ class AllSerializersErrorsTest extends PHPUnit_Framework_TestSuite {
 	 */
 	public static $suites = array(
 		// Lib Folder
+		'AllSerializersErrorsLibTest.php',
 		'AllSerializersErrorsErrorsTest.php',
 	);
 
