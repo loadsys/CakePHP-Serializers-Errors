@@ -41,8 +41,13 @@ Configure::write('Exception', array(
 
 * Once this is done Exceptions are rendered as possible, [JSON API errors](http://jsonapi.org/format/#errors), 
 JSON formated errors or standard HTML responses, differing on the request `Accepts` Header. 
+* So if you use:
+ - `Accepts: application/vnd.api+json` JSON API Errors are returned
+ - `Accepts: application/json` JSON Errors are returned
+ - `Accepts: */*` Normal CakePHP HTML Style Errors are returned
 * If you build custom Exceptions that extend `BaseSerializerException` you get 
-Exceptions that enable the full feature set of [JSON API errors](http://jsonapi.org/format/#errors).
+Exceptions that enable the full feature set of [JSON API errors](http://jsonapi.org/format/#errors)
+in addition to be rendering in the pattern described above.
 
 ## Contributing
 
