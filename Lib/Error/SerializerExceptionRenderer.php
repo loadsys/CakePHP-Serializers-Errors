@@ -265,14 +265,14 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 		$this->controller->response->statusCode($error->status);
 
 		// set the errors object to match JsonApi's expectations
-		$this->controller->set('id', $error->id);
-		$this->controller->set('href', $error->href);
-		$this->controller->set('status', $error->status);
-		$this->controller->set('code', $error->code);
-		$this->controller->set('title', $error->title);
-		$this->controller->set('detail', $error->detail);
-		$this->controller->set('links', $error->links);
-		$this->controller->set('paths', $error->paths);
+		$this->controller->set('id', $error->id());
+		$this->controller->set('href', $error->href());
+		$this->controller->set('status', $error->status());
+		$this->controller->set('code', $error->code());
+		$this->controller->set('title', $error->title());
+		$this->controller->set('detail', $error->detail());
+		$this->controller->set('links', $error->links());
+		$this->controller->set('paths', $error->paths());
 		$this->controller->set('error', $error);
 
 		$this->controller->set('url', $this->controller->request->here());
@@ -299,14 +299,14 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 		$this->controller->response->statusCode($error->status);
 
 		// set all the values we have from our exception to populate the json object
-		$this->controller->set('id', h($error->id));
-		$this->controller->set('href', h($error->href));
-		$this->controller->set('status', h($error->status));
-		$this->controller->set('code', h($error->code));
-		$this->controller->set('title', h($error->title));
-		$this->controller->set('detail', h($error->detail));
-		$this->controller->set('links', h($error->links));
-		$this->controller->set('paths', h($error->paths));
+		$this->controller->set('id', h($error->id()));
+		$this->controller->set('href', h($error->href()));
+		$this->controller->set('status', h($error->status()));
+		$this->controller->set('code', h($error->code()));
+		$this->controller->set('title', h($error->title()));
+		$this->controller->set('detail', h($error->detail()));
+		$this->controller->set('links', h($error->links()));
+		$this->controller->set('paths', h($error->paths()));
 
 		$this->controller->set('_serialize', array(
 			'id', 'href', 'status', 'code', 'title ', 'detail', 'links', 'paths'
@@ -338,14 +338,14 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 		// set the errors object to match JsonApi's standard
 		$errors = array(
 			'errors' => array(
-				'id' => h($error->id),
-				'href' => h($error->href),
-				'status' => h($error->status),
-				'code' => h($error->code),
-				'title' => h($error->title),
-				'detail' => h($error->detail),
-				'links' => h($error->links),
-				'paths' => h($error->paths),
+				'id' => h($error->id()),
+				'href' => h($error->href()),
+				'status' => h($error->status()),
+				'code' => h($error->code()),
+				'title' => h($error->title()),
+				'detail' => h($error->detail()),
+				'links' => h($error->links()),
+				'paths' => h($error->paths()),
 			),
 		);
 		// json encode the errors
