@@ -73,6 +73,11 @@ class BaseSerializerExceptionTest extends CakeTestCase {
 			"Status does not match {$status}"
 		);
 		$this->assertEquals(
+			$status,
+			$testBaseSerializerException->code,
+			"Code does not match {$status}"
+		);
+		$this->assertEquals(
 			$id,
 			$testBaseSerializerException->id,
 			"Id does not match {$id}"
@@ -92,6 +97,50 @@ class BaseSerializerExceptionTest extends CakeTestCase {
 			$testBaseSerializerException->paths,
 			"Paths does not match expectation"
 		);
+	}
+
+	/**
+	 * test the __call method
+	 *
+	 * @return void
+	 */
+	public function testMagicCallMethod() {
+		$title = "New Title";
+		$detail = "Custom detail message";
+		$status = 406;
+		$code = "Some Status Code";
+		$id = "13242134-456657-asdfasdf";
+		$href = 'https://www.asdfasdfasdf.com/';
+		$links = array('link' => 'link');
+		$paths = array('something' => 'something');
+
+		$testBaseSerializerException = new BaseSerializerException(
+			$title,
+			$detail,
+			$status,
+			$code,
+			$id,
+			$href,
+			$links,
+			$paths
+		);
+
+		$this->assertEquals(
+			$title,
+			$testBaseSerializerException->title(),
+			"BaseSerializerException::title() should match our passed in `title`: {$title}"
+		);
+
+		$this->assertEquals(
+			$detail,
+			$testBaseSerializerException->detail(),
+			"BaseSerializerException::detail() should match our passed in `detail`: {$detail}"
+		);
+
+		$this->setExpectedException(
+			'BadMethodCallException', "No method or property ::getSomething for this class"
+		);
+		$testBaseSerializerException->getSomething();
 	}
 
 }

@@ -98,6 +98,7 @@ class BaseSerializerException extends CakeException {
 		$this->title = $title;
 		$this->detail = $detail;
 		$this->status = $status;
+		$this->code = $status;
 		$this->id = $id;
 		$this->href = $href;
 		$this->links = $links;
@@ -105,6 +106,23 @@ class BaseSerializerException extends CakeException {
 
 		// construct the parent CakeException class
 		parent::__construct($this->title, $this->status);
+	}
+
+	/**
+	 * magic method __call, checks if the method called is a property of the class,
+	 * and returns the property if it is, else throws BadMethodCallException
+	 *
+	 * @param string $name [description]
+	 * @param array $args [description]
+	 * @return multi
+	 * @throws BadMethodCallException if the Method and Property does not exist
+	 */
+	public function __call($name, $args) {
+		if (property_exists($this, $name)) {
+			return $this->{$name};
+		}
+
+		throw new BadMethodCallException("No method or property ::{$name} for this class");
 	}
 
 }
