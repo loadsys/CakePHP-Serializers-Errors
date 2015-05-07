@@ -335,20 +335,20 @@ class SerializerExceptionRendererTest extends CakeTestCase {
 			"render did not return our mocked value `renderHttpException` for a HttpException"
 		);
 
-		$exception = new Exception("Default Exception");
+		$exception = new Exception("Default Exception", 400);
 		$mockRenderer = $this->getMock('TestSerializerExceptionRenderer',
-			array('render'),
+			array('error500'),
 			array($exception)
 		);
 		$mockRenderer->expects($this->once())
-			->method('render')
-			->will($this->returnValue("render"));
+			->method('error500')
+			->with($exception)
+			->will($this->returnValue("error500"));
 		$mockRenderer->error = $exception;
-
 		$this->assertEquals(
-			"render",
+			"error500",
 			$mockRenderer->render(),
-			"render did not return our mocked value `render` for a Exception"
+			"render did not return our mocked value `error500` for a standard Exception"
 		);
 	}
 

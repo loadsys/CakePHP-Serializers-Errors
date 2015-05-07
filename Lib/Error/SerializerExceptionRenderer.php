@@ -34,9 +34,10 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 			return $this->renderCakeException($this->error);
 		} elseif ($this->error instanceof HttpException) {
 			return $this->renderHttpException($this->error);
+		} else {
+			// This isn't a standard CakeException, render it using the default error500 method
+			return $this->error500($this->error);
 		}
-
-		return parent::render();
 	}
 
 	/**
