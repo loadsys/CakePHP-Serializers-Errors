@@ -49,6 +49,16 @@ class TestSerializerExceptionRenderer extends SerializerExceptionRenderer {
 	/**
 	 * calls parent method
 	 *
+	 * @param ValidationBaseSerializerException $error the ValidationBaseSerializerException error to render
+	 * @return void
+	 */
+	public function renderValidationSerializerException(ValidationBaseSerializerException $error) {
+		return parent::renderValidationSerializerException($error);
+	}
+
+	/**
+	 * calls parent method
+	 *
 	 * @param HttpException $error an instance of HttpException
 	 * @return void
 	 */
@@ -257,6 +267,23 @@ class SerializerExceptionRendererTest extends CakeTestCase {
 	 * @return void
 	 */
 	public function testRender() {
+		$exception = new ValidationBaseSerializerException();
+		$mockRenderer = $this->getMock('TestSerializerExceptionRenderer',
+			array('renderValidationSerializerException'),
+			array($exception)
+		);
+		$mockRenderer->expects($this->once())
+			->method('renderValidationSerializerException')
+			->with($exception)
+			->will($this->returnValue("renderValidationSerializerException"));
+		$mockRenderer->error = $exception;
+
+		$this->assertEquals(
+			"renderValidationSerializerException",
+			$mockRenderer->render(),
+			"render did not return our mocked value `renderValidationSerializerException` for a ValidationBaseSerializerException"
+		);
+
 		$exception = new BaseSerializerException();
 		$mockRenderer = $this->getMock('TestSerializerExceptionRenderer',
 			array('renderSerializerException'),
@@ -270,7 +297,7 @@ class SerializerExceptionRendererTest extends CakeTestCase {
 
 		$this->assertEquals(
 			"renderSerializerException",
-			$mockRenderer->render($exception),
+			$mockRenderer->render(),
 			"render did not return our mocked value `renderSerializerException` for a BaseSerializerException"
 		);
 
@@ -287,7 +314,7 @@ class SerializerExceptionRendererTest extends CakeTestCase {
 
 		$this->assertEquals(
 			"renderCakeException",
-			$mockRenderer->render($exception),
+			$mockRenderer->render(),
 			"render did not return our mocked value `renderCakeException` for a CakeException"
 		);
 
@@ -304,11 +331,11 @@ class SerializerExceptionRendererTest extends CakeTestCase {
 
 		$this->assertEquals(
 			"renderHttpException",
-			$mockRenderer->render($exception),
+			$mockRenderer->render(),
 			"render did not return our mocked value `renderHttpException` for a HttpException"
 		);
 
-		$exception = new Exception();
+		$exception = new Exception("Default Exception");
 		$mockRenderer = $this->getMock('TestSerializerExceptionRenderer',
 			array('render'),
 			array($exception)
@@ -320,7 +347,7 @@ class SerializerExceptionRendererTest extends CakeTestCase {
 
 		$this->assertEquals(
 			"render",
-			$mockRenderer->render($exception),
+			$mockRenderer->render(),
 			"render did not return our mocked value `render` for a Exception"
 		);
 	}
@@ -520,7 +547,7 @@ class SerializerExceptionRendererTest extends CakeTestCase {
 	}
 
 	/**
-	 * test the renderSerializerException method when calling renderCakeAsJson
+	 * test the renderSerializerException method when calling renderSerializerAsJson
 	 *
 	 * @return void
 	 */
@@ -549,7 +576,7 @@ class SerializerExceptionRendererTest extends CakeTestCase {
 	}
 
 	/**
-	 * test the renderSerializerException method when calling defaultCakeRender
+	 * test the renderSerializerException method when calling defaultSerializerRender
 	 *
 	 * @return void
 	 */
@@ -574,6 +601,90 @@ class SerializerExceptionRendererTest extends CakeTestCase {
 			"defaultSerializerRender",
 			$mockRenderer->renderSerializerException($exception),
 			"renderSerializerException did not return our mocked value"
+		);
+	}
+
+	/**
+	 * test the renderValidationSerializerException method when calling renderValidationSerializerAsJsonApi
+	 *
+	 * @return void
+	 */
+	public function testRenderValidationSerializerExceptionJsonApiRequest() {
+		$exception = new ValidationBaseSerializerException();
+		$mockRenderer = $this->getMock('TestSerializerExceptionRenderer',
+			array('isJsonApiRequest', 'renderValidationSerializerAsJsonApi'),
+			array($exception)
+		);
+		$mockRenderer->expects($this->once())
+			->method('isJsonApiRequest')
+			->will($this->returnValue(true));
+		$mockRenderer->expects($this->once())
+			->method('renderValidationSerializerAsJsonApi')
+			->with($exception)
+			->will($this->returnValue("renderValidationSerializerAsJsonApi"));
+
+		$this->assertEquals(
+			"renderValidationSerializerAsJsonApi",
+			$mockRenderer->renderValidationSerializerException($exception),
+			"renderValidationSerializerException did not return our mocked value"
+		);
+	}
+
+	/**
+	 * test the renderValidationSerializerException method when calling renderValidationSerializerAsJson
+	 *
+	 * @return void
+	 */
+	public function testRenderValidationSerializerExceptionJsonRequest() {
+		$exception = new ValidationBaseSerializerException();
+		$mockRenderer = $this->getMock('TestSerializerExceptionRenderer',
+			array('isJsonApiRequest', 'isJsonRequest', 'renderValidationSerializerAsJson'),
+			array($exception)
+		);
+		$mockRenderer->expects($this->once())
+			->method('isJsonApiRequest')
+			->will($this->returnValue(false));
+		$mockRenderer->expects($this->once())
+			->method('isJsonRequest')
+			->will($this->returnValue(true));
+		$mockRenderer->expects($this->once())
+			->method('renderValidationSerializerAsJson')
+			->with($exception)
+			->will($this->returnValue("renderValidationSerializerAsJson"));
+
+		$this->assertEquals(
+			"renderValidationSerializerAsJson",
+			$mockRenderer->renderValidationSerializerException($exception),
+			"renderValidationSerializerException did not return our mocked value"
+		);
+	}
+
+	/**
+	 * test the renderValidationSerializerException method when calling defaultValidationSerializerRender
+	 *
+	 * @return void
+	 */
+	public function testRenderValidationSerializerExceptionDefaultRequest() {
+		$exception = new ValidationBaseSerializerException();
+		$mockRenderer = $this->getMock('TestSerializerExceptionRenderer',
+			array('isJsonApiRequest', 'isJsonRequest', 'defaultValidationSerializerRender'),
+			array($exception)
+		);
+		$mockRenderer->expects($this->once())
+			->method('isJsonApiRequest')
+			->will($this->returnValue(false));
+		$mockRenderer->expects($this->once())
+			->method('isJsonRequest')
+			->will($this->returnValue(false));
+		$mockRenderer->expects($this->once())
+			->method('defaultValidationSerializerRender')
+			->with($exception)
+			->will($this->returnValue("defaultValidationSerializerRender"));
+
+		$this->assertEquals(
+			"defaultValidationSerializerRender",
+			$mockRenderer->renderValidationSerializerException($exception),
+			"renderValidationSerializerException did not return our mocked value"
 		);
 	}
 

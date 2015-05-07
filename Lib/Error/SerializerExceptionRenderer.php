@@ -34,9 +34,9 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 			return $this->renderCakeException($this->error);
 		} elseif ($this->error instanceof HttpException) {
 			return $this->renderHttpException($this->error);
-		} else {
-			return parent::render();
 		}
+
+		return parent::render();
 	}
 
 	/**
