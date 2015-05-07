@@ -1282,7 +1282,7 @@ class SerializerExceptionRendererTest extends CakeTestCase {
 	 * @return void
 	 */
 	public function testAddHttpCodes() {
-		$httpCodesAdded = array(422 => 'Unprocessable Entity',);
+		$httpCodesAdded = array(422 => 'Unprocessable Entity');
 
 		$mockController = $this->getMock('Controller', array('render', 'here'));
 		$mockController->request = new CakeRequest();

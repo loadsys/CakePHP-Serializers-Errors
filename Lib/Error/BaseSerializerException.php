@@ -54,7 +54,7 @@ class BaseSerializerException extends CakeException {
 	 * The HTTP status code applicable to this problem, expressed as a string
 	 * value.
 	 *
-	 * @var integer
+	 * @var int
 	 */
 	public $status = 400;
 
@@ -154,7 +154,7 @@ class ValidationBaseSerializerException extends CakeException {
 	 * The HTTP status code applicable to this problem, expressed as a string
 	 * value, default is 422
 	 *
-	 * @var integer
+	 * @var int
 	 */
 	public $status = 422;
 

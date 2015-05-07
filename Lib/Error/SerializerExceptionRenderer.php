@@ -450,7 +450,7 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 
 		// set the errors object to match JsonApi's standard
 		$errors = array(
-			'errors' =>  $error->validationErrors(),
+			'errors' => $error->validationErrors(),
 		);
 
 		// json encode the errors
