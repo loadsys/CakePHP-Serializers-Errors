@@ -22,7 +22,7 @@ CakePHP SerializersErrors Serializes and Renders `HttpException`s, `CakeExceptio
 $ composer require loadsys/cakephp-serializers-errors
 ````
 
-## Usage ##
+## Usage
 
 * Add this plugin to your application by adding this line to your bootstrap.php
 
@@ -48,6 +48,109 @@ JSON formated errors or standard HTML responses, differing on the request `Accep
 * If you build custom Exceptions that extend `BaseSerializerException` you get 
 Exceptions that enable the full feature set of [JSON API errors](http://jsonapi.org/format/#errors)
 in addition to be rendering in the pattern described above.
+
+## Sample Responses
+
+Here are some sample response for the different Exception classes.
+
+### BaseSerializerException
+
+#### Accepts: application/vnd.api+json
+
+Matches the format expected in [JSON API](http://jsonapi.org/format/#errors)
+
+```php
+throw new BaseSerializerException("This is a message.", "Something failed", 400, "Custom ID For Error", "http://docs.domain.com/api/v1/custom-id-for-error", array(), array())
+```
+
+```javascript
+{
+	"errors": {
+		"id": "Custom ID For Error",
+		"href": "http://docs.domain.com/api/v1/custom-id-for-error",
+		"status": "400",
+		"code": "400",
+		"title": "This is a message.",
+		"detail": "Something failed",
+		"links": [],
+		"paths": []
+	}
+}
+```
+
+#### Accepts: application/json
+
+```php
+throw new BaseSerializerException("This is a message.", "Something failed", 400, "Custom ID For Error", "http://docs.domain.com/api/v1/custom-id-for-error", array(), array())
+```
+
+```javascript
+{
+	"id": "Custom ID For Error",
+	"href": "http://docs.domain.com/api/v1/custom-id-for-error",
+	"status": "400",
+	"code": "400",
+	"detail": "Something failed",
+	"links": [],
+	"paths": []
+}
+```
+
+### ValidationBaseSerializerException
+
+#### Accepts: application/vnd.api+json
+
+Matches the format expected in [JSON API](http://jsonapi.org/format/#errors)
+
+```php
+throw new ValidationBaseSerializerException("This is a message.", $this->ModelName->invalidFields(), 422, "Custom ID For Error", "http://docs.domain.com/api/v1/custom-id-for-error", array(), array())
+```
+
+```javascript
+{
+	"errors": {
+		"id": "Custom ID For Error",
+		"href": "http://docs.domain.com/api/v1/custom-id-for-error",
+		"status": "400",
+		"code": "400",
+		"title": "This is a message.",
+		"detail": {
+			"username": [
+				"Username can not be empty",
+				"Username can only be alphanumeric characters"
+			],
+			"first_name": [
+				"First Name must be longer than 4 characters"
+			]
+		},
+		"links": [],
+		"paths": []
+	}
+}
+```
+
+#### Accepts: application/json
+
+Matches the format expected in [Ember.js DS.Errors Class](http://emberjs.com/api/data/classes/DS.Errors.html)
+
+```php
+$invalidFields = $this->ModelName->invalidFields();
+throw new ValidationBaseSerializerException("This is a message.", $invalidFields, 422, "Custom ID For Error", "http://docs.domain.com/api/v1/custom-id-for-error", array(), array())
+```
+
+```javascript
+{
+	"errors": {
+		"username": [
+			"Username can not be empty",
+			"Username can only be alphanumeric characters"
+		],
+		"first_name": [
+			"First Name must be longer than 4 characters"
+		]
+	}
+}
+```
 
 ## Contributing
 

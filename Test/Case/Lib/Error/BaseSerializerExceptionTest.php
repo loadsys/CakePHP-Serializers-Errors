@@ -35,7 +35,7 @@ class BaseSerializerExceptionTest extends CakeTestCase {
 	 *
 	 * @return void
 	 */
-	public function testConstructor() {
+	public function testBaseConstructor() {
 		$title = "New Title";
 		$detail = "Custom detail message";
 		$status = 406;
@@ -104,7 +104,7 @@ class BaseSerializerExceptionTest extends CakeTestCase {
 	 *
 	 * @return void
 	 */
-	public function testMagicCallMethod() {
+	public function testBaseMagicCallMethod() {
 		$title = "New Title";
 		$detail = "Custom detail message";
 		$status = 406;
@@ -143,4 +143,95 @@ class BaseSerializerExceptionTest extends CakeTestCase {
 		$testBaseSerializerException->getSomething();
 	}
 
+	/**
+	 * Confirm that the construct sets our values properly
+	 *
+	 * @return void
+	 */
+	public function testValidationConstructor() {
+		$title = "New Title";
+		$validationErrors = array(
+			'username' => array(
+				"Username can not be empty",
+				"Username can only be alphanumeric",
+			),
+			'first_name' => array(
+				"First Name can only be alphanumeric and not empty",
+			),
+		);
+		$status = 422;
+
+		$testValidationBaseSerializerException = new ValidationBaseSerializerException(
+			$title,
+			$validationErrors,
+			$status
+		);
+
+		$this->assertInstanceOf('ValidationBaseSerializerException', $testValidationBaseSerializerException);
+		$this->assertInstanceOf('CakeException', $testValidationBaseSerializerException);
+
+		$this->assertEquals(
+			$title,
+			$testValidationBaseSerializerException->title,
+			"Title does not match {$title}"
+		);
+		$this->assertEquals(
+			$validationErrors,
+			$testValidationBaseSerializerException->validationErrors,
+			"Validation Errors does not match our input"
+		);
+		$this->assertEquals(
+			$status,
+			$testValidationBaseSerializerException->status,
+			"Status does not match {$status}"
+		);
+	}
+
+	/**
+	 * test the __call method
+	 *
+	 * @return void
+	 */
+	public function testValidationMagicCallMethod() {
+		$title = "New Title";
+		$validationErrors = array(
+			'username' => array(
+				"Username can not be empty",
+				"Username can only be alphanumeric",
+			),
+			'first_name' => array(
+				"First Name can only be alphanumeric and not empty",
+			),
+		);
+		$status = 422;
+
+		$testValidationBaseSerializerException = new ValidationBaseSerializerException(
+			$title,
+			$validationErrors,
+			$status
+		);
+
+		$this->assertEquals(
+			$title,
+			$testValidationBaseSerializerException->title(),
+			"ValidationBaseSerializerException::title() should match our passed in `title`: {$title}"
+		);
+
+		$this->assertEquals(
+			$status,
+			$testValidationBaseSerializerException->status(),
+			"ValidationBaseSerializerException::status() should match our passed in `status`: {$status}"
+		);
+
+		$this->assertEquals(
+			$validationErrors,
+			$testValidationBaseSerializerException->validationErrors(),
+			"ValidationBaseSerializerException::validationErrors() should match our passed in `detail`"
+		);
+
+		$this->setExpectedException(
+			'BadMethodCallException', "No method or property ::getSomething for this class"
+		);
+		$testValidationBaseSerializerException->getSomething();
+	}
 }
