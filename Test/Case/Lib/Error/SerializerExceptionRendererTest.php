@@ -139,6 +139,45 @@ class TestSerializerExceptionRenderer extends SerializerExceptionRenderer {
 	/**
 	 * calls parent method
 	 *
+	 * @param ValidationBaseSerializerException $error an instance of ValidationBaseSerializerException
+	 * @return void
+	 */
+	public function defaultValidationSerializerRender(ValidationBaseSerializerException $error) {
+		return parent::defaultValidationSerializerRender($error);
+	}
+
+	/**
+	 * calls parent method
+	 *
+	 * @param ValidationBaseSerializerException $error an instance of ValidationBaseSerializerException
+	 * @return void
+	 */
+	public function renderValidationSerializerAsJson(ValidationBaseSerializerException $error) {
+		return parent::renderValidationSerializerAsJson($error);
+	}
+
+	/**
+	 * calls parent method
+	 *
+	 * @param ValidationBaseSerializerException $error an instance of ValidationBaseSerializerException
+	 * @return void
+	 */
+	public function renderValidationSerializerAsJsonApi(ValidationBaseSerializerException $error) {
+		return parent::renderValidationSerializerAsJsonApi($error);
+	}
+
+	/**
+	 * calls parent method
+	 *
+	 * @return void
+	 */
+	public function addHttpCodes() {
+		return parent::addHttpCodes();
+	}
+
+	/**
+	 * calls parent method
+	 *
 	 * @return bool returns true if JsonApi media request, false otherwise
 	 */
 	public function isJsonApiRequest() {
@@ -981,6 +1020,167 @@ class SerializerExceptionRendererTest extends CakeTestCase {
 	}
 
 	/**
+	 * test the defaultValidationSerializerRender method
+	 *
+	 * @return void
+	 */
+	public function testDefaultValidationSerializerRender() {
+		$validationErrors = array(
+			'username' => array(
+				"Username can not be empty",
+				"Username can only be alphanumeric",
+			),
+			'first_name' => array(
+				"First Name can only be alphanumeric and not empty",
+			),
+		);
+		$validationBaseSerializerException = new ValidationBaseSerializerException("User Failed Validation", $validationErrors);
+		$exceptionRenderer = $this->returnRenderer('text/html', $validationBaseSerializerException);
+
+		$response = $exceptionRenderer->defaultValidationSerializerRender($validationBaseSerializerException);
+
+		$this->assertEquals(
+			"422",
+			$exceptionRenderer->controller->response->statusCode(),
+			"Our Controller Response Status Code does not equal `422`"
+		);
+		$this->assertEquals(
+			'text/html',
+			$exceptionRenderer->controller->response->type(),
+			"Our Response Type does not equal `text/html`"
+		);
+		$this->assertArrayHasKey(
+			"title",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an `title` viewVars"
+		);
+		$this->assertArrayHasKey(
+			"validationErrors",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an `validationErrors` viewVars"
+		);
+		$this->assertArrayHasKey(
+			"status",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an `status` viewVars"
+		);
+		$this->assertArrayHasKey(
+			"error",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an `error` viewVars"
+		);
+		$this->assertSame(
+			'cake-response-send',
+			$response,
+			"Our response does not match the expected string"
+		);
+	}
+
+	/**
+	 * test the renderValidationSerializerAsJson method
+	 *
+	 * @return void
+	 */
+	public function testRenderValidationSerializerAsJson() {
+		$validationErrors = array(
+			'username' => array(
+				"Username can not be empty",
+				"Username can only be alphanumeric",
+			),
+			'first_name' => array(
+				"First Name can only be alphanumeric and not empty",
+			),
+		);
+		$validationBaseSerializerException = new ValidationBaseSerializerException("User Failed Validation", $validationErrors);
+		$exceptionRenderer = $this->returnRenderer('application/json', $validationBaseSerializerException);
+
+		$response = $exceptionRenderer->renderValidationSerializerAsJson($validationBaseSerializerException);
+
+		$this->assertEquals(
+			"422",
+			$exceptionRenderer->controller->response->statusCode(),
+			"Our Controller Response Status Code does not equal 422"
+		);
+		$this->assertEquals(
+			"application/json",
+			$exceptionRenderer->controller->response->type(),
+			"Our Response Type does not equal application/json"
+		);
+		$this->assertArrayHasKey(
+			"title",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an title viewVars"
+		);
+		$this->assertArrayHasKey(
+			"validationErrors",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an validationErrors viewVars"
+		);
+		$this->assertArrayHasKey(
+			"status",
+			$exceptionRenderer->controller->viewVars,
+			"We do not have an status viewVars"
+		);
+		$this->assertSame(
+			'cake-response-send',
+			$response,
+			"Our response does not match the expected string"
+		);
+	}
+
+	/**
+	 * test the renderValidationSerializerAsJsonApi method
+	 *
+	 * @return void
+	 */
+	public function testRenderValidationSerializerAsJsonApi() {
+		$validationErrors = array(
+			'username' => array(
+				"Username can not be empty",
+				"Username can only be alphanumeric",
+			),
+			'first_name' => array(
+				"First Name can only be alphanumeric and not empty",
+			),
+		);
+		$validationBaseSerializerException = new ValidationBaseSerializerException("User Failed Validation", $validationErrors);
+		$exceptionRenderer = $this->returnRenderer('application/vnd.api+json', $validationBaseSerializerException);
+
+		$response = $exceptionRenderer->renderValidationSerializerAsJsonApi($validationBaseSerializerException);
+
+		$this->assertEquals(
+			"422",
+			$exceptionRenderer->controller->response->statusCode(),
+			"Our Controller Response Status Code does not equal 422"
+		);
+		$this->assertEquals(
+			"application/vnd.api+json",
+			$exceptionRenderer->controller->response->type(),
+			"Our Response Type does not equal application/vnd.api+json"
+		);
+		$this->assertInternalType(
+			"string",
+			$exceptionRenderer->controller->response->body(),
+			"Our body is not a string"
+		);
+		$this->assertInstanceOf(
+			"stdClass",
+			json_decode($exceptionRenderer->controller->response->body()),
+			"Our body is not a json_encoded array"
+		);
+		$this->assertSame(
+			'{"errors":{"username":["Username can not be empty","Username can only be alphanumeric"],"first_name":["First Name can only be alphanumeric and not empty"]}}',
+			$exceptionRenderer->controller->response->body(),
+			"Our body does not match the expected string"
+		);
+		$this->assertSame(
+			'cake-response-send',
+			$response,
+			"Our response does not match the expected string"
+		);
+	}
+
+	/**
 	 * test the isJsonApiRequest method when returns true
 	 *
 	 * @return void
@@ -1073,6 +1273,32 @@ class SerializerExceptionRendererTest extends CakeTestCase {
 			false,
 			$exceptionRenderer->isJsonRequest(),
 			"::isJsonRequest should have returned false, when we have the accepts header returning false"
+		);
+	}
+
+	/**
+	 * test the isJsonRequest method when returns false
+	 *
+	 * @return void
+	 */
+	public function testAddHttpCodes() {
+		$httpCodesAdded = array(422 => 'Unprocessable Entity',);
+
+		$mockController = $this->getMock('Controller', array('render', 'here'));
+		$mockController->request = new CakeRequest();
+		$mockController->response = $this->getMock('CakeResponse');
+		$mockController->response->expects($this->once())
+			->method('httpCodes')
+			->with($httpCodesAdded)
+			->will($this->returnValue(null));
+
+		$exceptionRenderer = new TestSerializerExceptionRenderer(new Exception());
+		$exceptionRenderer->controller = $mockController;
+
+		$this->assertEquals(
+			null,
+			$exceptionRenderer->addHttpCodes(),
+			"::addHttpCodes should have returned void"
 		);
 	}
 

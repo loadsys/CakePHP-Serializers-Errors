@@ -17,36 +17,36 @@ class BaseSerializerException extends CakeException {
 	 * occurrence to occurrence of the problem, except for purposes of
 	 * localization.
 	 *
-	 * @var null
+	 * @var string
 	 */
-	public $title = 'Base Serializer Exception';
+	public $title = "Base Serializer Exception";
 
 	/**
 	 * A human-readable explanation specific to this occurrence of the problem.
 	 *
-	 * @var null
+	 * @var string
 	 */
-	public $detail = 'Base Serializer Exception';
+	public $detail = "Base Serializer Exception";
 
 	/**
 	 * An application-specific error code, expressed as a string value.
 	 *
-	 * @var null
+	 * @var string
 	 */
-	public $code = 400;
+	public $code = "400";
 
 	/**
 	 * A URI that MAY yield further details about this particular occurrence
 	 * of the problem.
 	 *
-	 * @var null
+	 * @var string
 	 */
 	public $href = null;
 
 	/**
 	 * A unique identifier for this particular occurrence of the problem.
 	 *
-	 * @var null
+	 * @var string
 	 */
 	public $id = null;
 
@@ -54,25 +54,25 @@ class BaseSerializerException extends CakeException {
 	 * The HTTP status code applicable to this problem, expressed as a string
 	 * value.
 	 *
-	 * @var null
+	 * @var integer
 	 */
-	public $status = null;
+	public $status = 400;
 
 	/**
 	 * Associated resources which can be dereferenced from the request document.
 	 *
-	 * @var null
+	 * @var array
 	 */
-	public $links = null;
+	public $links = array();
 
 	/**
 	 * The relative path to the relevant attribute within the associated
 	 * resource(s). Only appropriate for problems that apply to a single
 	 * resource or type of resource.
 	 *
-	 * @var null
+	 * @var array
 	 */
-	public $path = null;
+	public $path = array();
 
 	/**
 	 * Constructs a new instance of the base BaseJsonApiException
@@ -105,6 +105,76 @@ class BaseSerializerException extends CakeException {
 		$this->paths = $paths;
 
 		// construct the parent CakeException class
+		parent::__construct($this->title, $this->status);
+	}
+
+	/**
+	 * magic method __call, checks if the method called is a property of the class,
+	 * and returns the property if it is, else throws BadMethodCallException
+	 *
+	 * @param string $name [description]
+	 * @param array $args [description]
+	 * @return multi
+	 * @throws BadMethodCallException if the Method and Property does not exist
+	 */
+	public function __call($name, $args) {
+		if (property_exists($this, $name)) {
+			return $this->{$name};
+		}
+
+		throw new BadMethodCallException("No method or property ::{$name} for this class");
+	}
+
+}
+
+/**
+ * ValidationBaseSerializerException
+ *
+ * a generic exception to use when validation errors occur
+ */
+class ValidationBaseSerializerException extends CakeException {
+
+	/**
+	 * A short, human-readable summary of the problem. It SHOULD NOT change from
+	 * occurrence to occurrence of the problem, except for purposes of
+	 * localization.
+	 *
+	 * @var string
+	 */
+	public $title = 'Base Validation Serializer Exception';
+
+	/**
+	 * An array of Validation Errors that the Cake Model has reported
+	 *
+	 * @var array
+	 */
+	public $validationErrors = array();
+
+	/**
+	 * The HTTP status code applicable to this problem, expressed as a string
+	 * value, default is 422
+	 *
+	 * @var integer
+	 */
+	public $status = 422;
+
+	/**
+	 * Constructs a new instance of the base ValidationFailedJsonApiException
+	 *
+	 * @param string $title The title of the exception, passed to parent CakeException::__construct
+	 * @param array $validationErrors An array of Validation Errors the Cake Model has reported
+	 * @param int $status The http status code of the error, passed to parent CakeException::__construct
+	 */
+	public function __construct(
+		$title = 'Validation Failed',
+		array $validationErrors = array(),
+		$status = 422
+	) {
+		// Set the passed in properties to the properties of the Object
+		$this->title = $title;
+		$this->validationErrors = $validationErrors;
+		$this->status = $status;
+
 		parent::__construct($this->title, $this->status);
 	}
 

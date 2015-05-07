@@ -28,6 +28,8 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 	public function render() {
 		if ($this->error instanceof BaseSerializerException) {
 			return $this->renderSerializerException($this->error);
+		} elseif ($this->error instanceof ValidationBaseSerializerException) {
+			return $this->renderValidationSerializerException($this->error);
 		} elseif ($this->error instanceof CakeException) {
 			return $this->renderCakeException($this->error);
 		} elseif ($this->error instanceof HttpException) {
@@ -89,6 +91,24 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 		}
 
 		return $this->defaultSerializerRender($error);
+	}
+
+	/**
+	 * render exceptions of type ValidationBaseSerializerException
+	 *
+	 * @param ValidationBaseSerializerException $error the ValidationBaseSerializerException error to render
+	 * @return void
+	 */
+	protected function renderValidationSerializerException(ValidationBaseSerializerException $error) {
+		if ($this->isJsonApiRequest()) {
+			return $this->renderValidationSerializerAsJsonApi($error);
+		}
+
+		if ($this->isJsonRequest()) {
+			return $this->renderValidationSerializerAsJson($error);
+		}
+
+		return $this->defaultValidationSerializerRender($error);
 	}
 
 	/**
@@ -262,7 +282,7 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 	 * @return void
 	 */
 	protected function defaultSerializerRender(BaseSerializerException $error) {
-		$this->controller->response->statusCode($error->status);
+		$this->controller->response->statusCode($error->status());
 
 		// set the errors object to match JsonApi's expectations
 		$this->controller->set('id', $error->id());
@@ -296,7 +316,7 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 		// Set the view class as json and render as json
 		$this->controller->viewClass = 'Json';
 		$this->controller->response->type('json');
-		$this->controller->response->statusCode($error->status);
+		$this->controller->response->statusCode($error->status());
 
 		// set all the values we have from our exception to populate the json object
 		$this->controller->set('id', h($error->id()));
@@ -333,7 +353,7 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 		// Set the controller to response as JSON API
 		$this->controller->response->type('jsonapi');
 		// Set the correct Status Code
-		$this->controller->response->statusCode($error->status);
+		$this->controller->response->statusCode($error->status());
 
 		// set the errors object to match JsonApi's standard
 		$errors = array(
@@ -354,6 +374,103 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 		// set the body to the json encoded errors
 		$this->controller->response->body($jsonEncodedErrors);
 		return $this->controller->response->send();
+	}
+
+	/**
+	 * render the ValidationBaseSerializerException in the general case
+	 *
+	 * @param ValidationBaseSerializerException $error an instance of ValidationBaseSerializerException
+	 * @return void
+	 */
+	protected function defaultValidationSerializerRender(ValidationBaseSerializerException $error) {
+		$this->addHttpCodes();
+		$this->controller->response->statusCode($error->status());
+
+		// set the errors object to match JsonApi's expectations
+		$this->controller->set('title', $error->title());
+		$this->controller->set('validationErrors', $error->validationErrors());
+		$this->controller->set('status', $error->status());
+		$this->controller->set('error', $error);
+
+		$this->controller->set('url', $this->controller->request->here());
+
+		if (empty($template)) {
+			$template = "SerializersErrors./Errors/validation_serializer_exception";
+		}
+
+		$this->controller->render($template);
+		$this->controller->afterFilter();
+		return $this->controller->response->send();
+	}
+
+	/**
+	 * render the ValidationBaseSerializerException for a JSON request
+	 *
+	 * @param ValidationBaseSerializerException $error an instance of ValidationBaseSerializerException
+	 * @return void
+	 */
+	protected function renderValidationSerializerAsJson(ValidationBaseSerializerException $error) {
+		// Set the view class as json and render as json
+		$this->controller->viewClass = 'Json';
+		$this->controller->response->type('json');
+		$this->addHttpCodes();
+		$this->controller->response->statusCode($error->status());
+
+		// set all the values we have from our exception to populate the json object
+		$this->controller->set('title', h($error->title()));
+		$this->controller->set('validationErrors', $error->validationErrors());
+		$this->controller->set('status', h($error->status()));
+
+		$this->controller->set('_serialize', array(
+			'title', 'validationErrors', 'status',
+		));
+
+		if (empty($template)) {
+			$template = "SerializersErrors./Errors/validation_serializer_exception";
+		}
+
+		$this->controller->render($template);
+		$this->controller->afterFilter();
+		return $this->controller->response->send();
+	}
+
+	/**
+	 * render the ValidationBaseSerializerException for a JSON API request
+	 *
+	 * @param ValidationBaseSerializerException $error an instance of ValidationBaseSerializerException
+	 * @return void
+	 */
+	protected function renderValidationSerializerAsJsonApi(ValidationBaseSerializerException $error) {
+		// Add a response type for JSON API
+		$this->controller->response->type(array('jsonapi' => 'application/vnd.api+json'));
+		// Set the controller to response as JSON API
+		$this->controller->response->type('jsonapi');
+		$this->addHttpCodes();
+		$this->controller->response->statusCode($error->status());
+
+		// set the errors object to match JsonApi's standard
+		$errors = array(
+			'errors' =>  $error->validationErrors(),
+		);
+
+		// json encode the errors
+		$jsonEncodedErrors = json_encode($errors);
+
+		// set the body to the json encoded errors
+		$this->controller->response->body($jsonEncodedErrors);
+		return $this->controller->response->send();
+	}
+
+	/**
+	 * add additional HTTP codes to the CakeResponse Object
+	 *
+	 * @return void
+	 */
+	protected function addHttpCodes() {
+		$defaultCodes = array(
+			422 => 'Unprocessable Entity',
+		);
+		$this->controller->response->httpCodes($defaultCodes);
 	}
 
 	/**
