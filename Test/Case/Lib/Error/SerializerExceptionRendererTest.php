@@ -1106,20 +1106,21 @@ class SerializerExceptionRendererTest extends CakeTestCase {
 			$exceptionRenderer->controller->response->type(),
 			"Our Response Type does not equal application/json"
 		);
-		$this->assertArrayHasKey(
-			"title",
-			$exceptionRenderer->controller->viewVars,
-			"We do not have an title viewVars"
+
+		$this->assertInternalType(
+			"string",
+			$exceptionRenderer->controller->response->body(),
+			"Our body is not a string"
 		);
-		$this->assertArrayHasKey(
-			"validationErrors",
-			$exceptionRenderer->controller->viewVars,
-			"We do not have an validationErrors viewVars"
+		$this->assertInstanceOf(
+			"stdClass",
+			json_decode($exceptionRenderer->controller->response->body()),
+			"Our body is not a json_encoded array"
 		);
-		$this->assertArrayHasKey(
-			"status",
-			$exceptionRenderer->controller->viewVars,
-			"We do not have an status viewVars"
+		$this->assertSame(
+			'{"errors":{"username":["Username can not be empty","Username can only be alphanumeric"],"first_name":["First Name can only be alphanumeric and not empty"]}}',
+			$exceptionRenderer->controller->response->body(),
+			"Our body does not match the expected string"
 		);
 		$this->assertSame(
 			'cake-response-send',
@@ -1169,7 +1170,7 @@ class SerializerExceptionRendererTest extends CakeTestCase {
 			"Our body is not a json_encoded array"
 		);
 		$this->assertSame(
-			'{"errors":{"username":["Username can not be empty","Username can only be alphanumeric"],"first_name":["First Name can only be alphanumeric and not empty"]}}',
+			'{"errors":{"id":"","href":"","status":"422","code":"422","title":"User Failed Validation","detail":{"username":["Username can not be empty","Username can only be alphanumeric"],"first_name":["First Name can only be alphanumeric and not empty"]},"links":"","paths":""}}',
 			$exceptionRenderer->controller->response->body(),
 			"Our body does not match the expected string"
 		);

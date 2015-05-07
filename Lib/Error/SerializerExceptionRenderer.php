@@ -26,10 +26,10 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 	 * @return void
 	 */
 	public function render() {
-		if ($this->error instanceof BaseSerializerException) {
-			return $this->renderSerializerException($this->error);
-		} elseif ($this->error instanceof ValidationBaseSerializerException) {
+		if ($this->error instanceof ValidationBaseSerializerException) {
 			return $this->renderValidationSerializerException($this->error);
+		} elseif ($this->error instanceof BaseSerializerException) {
+			return $this->renderSerializerException($this->error);
 		} elseif ($this->error instanceof CakeException) {
 			return $this->renderCakeException($this->error);
 		} elseif ($this->error instanceof HttpException) {
@@ -416,21 +416,16 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 		$this->addHttpCodes();
 		$this->controller->response->statusCode($error->status());
 
-		// set all the values we have from our exception to populate the json object
-		$this->controller->set('title', h($error->title()));
-		$this->controller->set('validationErrors', $error->validationErrors());
-		$this->controller->set('status', h($error->status()));
+		// set the errors object to match JsonApi's standard
+		$errors = array(
+			'errors' => $error->validationErrors(),
+		);
 
-		$this->controller->set('_serialize', array(
-			'title', 'validationErrors', 'status',
-		));
+		// json encode the errors
+		$jsonEncodedErrors = json_encode($errors);
 
-		if (empty($template)) {
-			$template = "SerializersErrors./Errors/validation_serializer_exception";
-		}
-
-		$this->controller->render($template);
-		$this->controller->afterFilter();
+		// set the body to the json encoded errors
+		$this->controller->response->body($jsonEncodedErrors);
 		return $this->controller->response->send();
 	}
 
@@ -450,7 +445,16 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 
 		// set the errors object to match JsonApi's standard
 		$errors = array(
-			'errors' => $error->validationErrors(),
+			'errors' => array(
+				'id' => h($error->id()),
+				'href' => h($error->href()),
+				'status' => h($error->status()),
+				'code' => h($error->code()),
+				'title' => h($error->title()),
+				'detail' => h($error->validationErrors()),
+				'links' => h($error->links()),
+				'paths' => h($error->paths()),
+			),
 		);
 
 		// json encode the errors

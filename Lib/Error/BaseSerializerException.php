@@ -132,7 +132,7 @@ class BaseSerializerException extends CakeException {
  *
  * a generic exception to use when validation errors occur
  */
-class ValidationBaseSerializerException extends CakeException {
+class ValidationBaseSerializerException extends BaseSerializerException {
 
 	/**
 	 * A short, human-readable summary of the problem. It SHOULD NOT change from
@@ -144,13 +144,6 @@ class ValidationBaseSerializerException extends CakeException {
 	public $title = 'Base Validation Serializer Exception';
 
 	/**
-	 * An array of Validation Errors that the Cake Model has reported
-	 *
-	 * @var array
-	 */
-	public $validationErrors = array();
-
-	/**
 	 * The HTTP status code applicable to this problem, expressed as a string
 	 * value, default is 422
 	 *
@@ -159,23 +152,34 @@ class ValidationBaseSerializerException extends CakeException {
 	public $status = 422;
 
 	/**
-	 * Constructs a new instance of the base ValidationFailedJsonApiException
+	 * A CakePHP Model array of validation errors
+	 *
+	 * @var array
+	 */
+	public $validationErrors = array();
+
+	/**
+	 * Constructs a new instance of the base BaseJsonApiException
 	 *
 	 * @param string $title The title of the exception, passed to parent CakeException::__construct
-	 * @param array $validationErrors An array of Validation Errors the Cake Model has reported
+	 * @param array $validationErrors A CakePHP Model array of validation errors
 	 * @param int $status The http status code of the error, passed to parent CakeException::__construct
+	 * @param string $id A unique identifier for this particular occurrence of the problem.
+	 * @param string $href A URI that MAY yield further details about this particular occurrence of the problem.
+	 * @param array $links An array of JSON Pointers [RFC6901] to the associated resource(s) within the request document [e.g. ["/data"] for a primary data object].
+	 * @param array $paths An array of JSON Pointers to the relevant attribute(s) within the associated resource(s) in the request document. Each path MUST be relative to the resource path(s) expressed in the error object's "links" member [e.g. ["/first-name", "/last-name"] to reference a couple attributes].
 	 */
 	public function __construct(
 		$title = 'Validation Failed',
 		array $validationErrors = array(),
-		$status = 422
+		$status = 422,
+		$id = null,
+		$href = null,
+		$links = null,
+		$paths = null
 	) {
-		// Set the passed in properties to the properties of the Object
-		$this->title = $title;
 		$this->validationErrors = $validationErrors;
-		$this->status = $status;
-
-		parent::__construct($this->title, $this->status);
+		parent::__construct($title, $validationErrors, $status, $id, $href, $links, $paths);
 	}
 
 	/**
