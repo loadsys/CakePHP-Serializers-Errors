@@ -65,16 +65,18 @@ throw new BaseSerializerException("This is a message.", "Something failed", 400,
 
 ```javascript
 {
-	"errors": {
-		"id": "Custom ID For Error",
-		"href": "http://docs.domain.com/api/v1/custom-id-for-error",
-		"status": "400",
-		"code": "400",
-		"title": "This is a message.",
-		"detail": "Something failed",
-		"links": [],
-		"paths": []
-	}
+	"errors": [
+		{
+			"id": "Custom ID For Error",
+			"href": "http://docs.domain.com/api/v1/custom-id-for-error",
+			"status": "401",
+			"code": "401",
+			"title": "Title of the Error",
+			"detail": "More Detailed information",
+			"links": [],
+			"paths": []
+		}
+	]
 }
 ```
 
@@ -141,12 +143,19 @@ throw new ValidationBaseSerializerException("This is a message.", $invalidFields
 ```javascript
 {
 	"errors": {
-		"username": [
-			"Username can not be empty",
-			"Username can only be alphanumeric characters"
+		"name": [
+			"Name must not be empty.", 
+			"Name must be only alphanumeric characters"
 		],
-		"first_name": [
-			"First Name must be longer than 4 characters"
+		"status": [
+			"Status? must be true or false."
+		],
+		"SubModel": [
+			{
+				"options": [
+					"Options must take the form `first|second|third` and `formula` must be empty."
+				]
+			}
 		]
 	}
 }
