@@ -1119,7 +1119,7 @@ class SerializerExceptionRendererTest extends CakeTestCase {
 			"Our body is not a json_encoded array"
 		);
 		$this->assertSame(
-			'{"errors":{"id":"","href":"","status":"400","code":"400","title":"Base Serializer Exception","detail":"Base Serializer Exception","links":"","paths":""}}',
+			'{"errors":[{"id":"","href":"","status":"400","code":"400","title":"Base Serializer Exception","detail":"Base Serializer Exception","links":[],"paths":[]}]}',
 			$exceptionRenderer->controller->response->body(),
 			"Our body does not match the expected string"
 		);
@@ -1281,7 +1281,7 @@ class SerializerExceptionRendererTest extends CakeTestCase {
 			"Our body is not a json_encoded array"
 		);
 		$this->assertSame(
-			'{"errors":{"id":"","href":"","status":"422","code":"422","title":"User Failed Validation","detail":{"username":["Username can not be empty","Username can only be alphanumeric"],"first_name":["First Name can only be alphanumeric and not empty"]},"links":"","paths":""}}',
+			'{"errors":[{"id":"","href":"","status":"422","code":"422","title":"User Failed Validation","detail":{"username":["Username can not be empty","Username can only be alphanumeric"],"first_name":["First Name can only be alphanumeric and not empty"]},"links":[],"paths":[]}]}',
 			$exceptionRenderer->controller->response->body(),
 			"Our body does not match the expected string"
 		);

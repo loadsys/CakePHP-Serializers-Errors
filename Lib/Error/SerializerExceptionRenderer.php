@@ -359,14 +359,16 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 		// set the errors object to match JsonApi's standard
 		$errors = array(
 			'errors' => array(
-				'id' => h($error->id()),
-				'href' => h($error->href()),
-				'status' => h($error->status()),
-				'code' => h($error->code()),
-				'title' => h($error->title()),
-				'detail' => h($error->detail()),
-				'links' => h($error->links()),
-				'paths' => h($error->paths()),
+				array(
+					'id' => h($error->id()),
+					'href' => h($error->href()),
+					'status' => h($error->status()),
+					'code' => h($error->code()),
+					'title' => h($error->title()),
+					'detail' => h($error->detail()),
+					'links' => $error->links(),
+					'paths' => $error->paths(),
+				),
 			),
 		);
 		// json encode the errors
@@ -447,14 +449,16 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 		// set the errors object to match JsonApi's standard
 		$errors = array(
 			'errors' => array(
-				'id' => h($error->id()),
-				'href' => h($error->href()),
-				'status' => h($error->status()),
-				'code' => h($error->code()),
-				'title' => h($error->title()),
-				'detail' => h($error->validationErrors()),
-				'links' => h($error->links()),
-				'paths' => h($error->paths()),
+				array(
+					'id' => h($error->id()),
+					'href' => h($error->href()),
+					'status' => h($error->status()),
+					'code' => h($error->code()),
+					'title' => h($error->title()),
+					'detail' => h($error->validationErrors()),
+					'links' => h($error->links()),
+					'paths' => h($error->paths()),
+				),
 			),
 		);
 
