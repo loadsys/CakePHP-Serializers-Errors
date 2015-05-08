@@ -91,8 +91,8 @@ class BaseSerializerException extends CakeException {
 		$status = 400,
 		$id = null,
 		$href = null,
-		$links = null,
-		$paths = null
+		$links = array(),
+		$paths = array()
 	) {
 		// Set the passed in properties to the properties of the Object
 		$this->title = $title;
@@ -175,8 +175,8 @@ class ValidationBaseSerializerException extends BaseSerializerException {
 		$status = 422,
 		$id = null,
 		$href = null,
-		$links = null,
-		$paths = null
+		$links = array(),
+		$paths = array()
 	) {
 		$this->validationErrors = $validationErrors;
 		parent::__construct($title, $validationErrors, $status, $id, $href, $links, $paths);
