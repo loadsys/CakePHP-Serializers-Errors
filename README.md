@@ -6,8 +6,9 @@
 [![Coverage Status](https://coveralls.io/repos/loadsys/CakePHP-Serializers-Errors/badge.svg)](https://coveralls.io/r/loadsys/CakePHP-Serializers-Errors)
 [![Total Downloads](https://img.shields.io/packagist/dt/loadsys/cakephp-serializers-errors.svg?style=flat-square)](https://packagist.org/packages/loadsys/cakephp-serializers-errors)
 
-CakePHP SerializersErrors Serializes and Renders `HttpException`s, `CakeException`s and a new class
-`BaseSerializerException`s.
+Used to serialize CakePHP Errors and Exceptions, primarily as HTML, JSON or JSON API.
+
+Adds two new Exception Classes to extend from to get [JSON API](http://jsonapi.org/format/#errors) formatted error messages.
 
 ## Requirements
 
@@ -19,7 +20,7 @@ CakePHP SerializersErrors Serializes and Renders `HttpException`s, `CakeExceptio
 ### Composer
 
 ````bash
-$ composer require loadsys/cakephp-serializers-errors
+$ composer require loadsys/cakephp-serializers-errors:~1.0
 ````
 
 ## Usage
