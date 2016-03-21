@@ -691,53 +691,71 @@ class SerializerExceptionRendererTest extends CakeTestCase {
 	/**
 	 * test the defaultHttpRender method
 	 *
+	 * @param string $exceptionCode Exception Code to test for.
 	 * @return void
+	 * @dataProvider providerHttpExceptions
 	 */
-	public function testDefaultHttpRender() {
-		$httpException = new HttpException("Message", 400);
+	public function testDefaultHttpRender($exceptionCode) {
+		$httpException = new HttpException('ExceptionMessage', $exceptionCode);
 		$exceptionRenderer = $this->returnRenderer('text/html', $httpException);
 
 		$response = $exceptionRenderer->defaultHttpRender($httpException);
 
 		$this->assertEquals(
-			"400",
+			$exceptionCode,
 			$exceptionRenderer->controller->response->statusCode(),
-			"Our Controller Response Status Code does not equal 400"
+			"Our Controller Response Status Code should equal the passed in ErrorCode of {$exceptionCode}"
 		);
 		$this->assertEquals(
 			'text/html',
 			$exceptionRenderer->controller->response->type(),
-			"Our Response Type does not equal text/html"
+			"Our Response Type should equal text/html"
 		);
 		$this->assertArrayHasKey(
 			"code",
 			$exceptionRenderer->controller->viewVars,
-			"We do not have an code viewVars"
+			"We should have a code viewVars"
 		);
 		$this->assertArrayHasKey(
 			"name",
 			$exceptionRenderer->controller->viewVars,
-			"We do not have an name viewVars"
+			"We should have a name viewVars"
 		);
 		$this->assertArrayHasKey(
 			"message",
 			$exceptionRenderer->controller->viewVars,
-			"We do not have an message viewVars"
+			"We should have a message viewVars"
 		);
 		$this->assertArrayHasKey(
 			"url",
 			$exceptionRenderer->controller->viewVars,
-			"We do not have an url viewVars"
+			"We should have a url viewVars"
 		);
 		$this->assertArrayHasKey(
 			"error",
 			$exceptionRenderer->controller->viewVars,
-			"We do not have an error viewVars"
+			"We should have an error viewVars"
 		);
 		$this->assertSame(
 			null,
 			$response,
-			"Our response does not match null"
+			"Our response should equal null"
+		);
+	}
+
+	/**
+	 * DataProvider for testDefaultHttpRender.
+	 *
+	 * @return void Return Data inputs for testDefaultHttpRender.
+	 */
+	public function providerHttpExceptions() {
+		return array(
+			'400 Exception' => array(
+				'400',
+			),
+			'500 Exception' => array(
+				'500',
+			),
 		);
 	}
 
@@ -840,18 +858,20 @@ class SerializerExceptionRendererTest extends CakeTestCase {
 	/**
 	 * test the defaultCakeRender method
 	 *
+	 * @param string $exceptionCode Exception Code to test for.
 	 * @return void
+	 * @dataProvider providerHttpExceptions
 	 */
-	public function testDefaultCakeRender() {
-		$cakeException = new CakeException("Message");
+	public function testDefaultCakeRender($exceptionCode) {
+		$cakeException = new CakeException("Message", $exceptionCode);
 		$exceptionRenderer = $this->returnRenderer('text/html', $cakeException);
 
 		$response = $exceptionRenderer->defaultCakeRender($cakeException);
 
 		$this->assertEquals(
-			"500",
+			$exceptionCode,
 			$exceptionRenderer->controller->response->statusCode(),
-			"Our Controller Response Status Code does not equal 500"
+			"Our Controller Response Status Code should equal the passed in code of {$exceptionCode}"
 		);
 		$this->assertEquals(
 			'text/html',
