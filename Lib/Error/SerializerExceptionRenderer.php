@@ -190,7 +190,8 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 			'error' => $error,
 			'_serialize' => array('code', 'name', 'message', 'url')
 		));
-		$this->_outputMessage("error400");
+		$template = ($code >= 400 && $code < 500) ? 'error400' : 'error500';
+		$this->_outputMessage($template);
 	}
 
 	/**
@@ -273,7 +274,8 @@ class SerializerExceptionRenderer extends ExceptionRenderer {
 			'_serialize' => array('code', 'name', 'message', 'url')
 		));
 		$this->controller->set($error->getAttributes());
-		$this->_outputMessage("error500");
+		$template = ($code >= 400 && $code < 500) ? 'error400' : 'error500';
+		$this->_outputMessage($template);
 	}
 
 	/**
